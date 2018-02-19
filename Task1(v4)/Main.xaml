@@ -10,6 +10,7 @@
  xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
  xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
  xmlns:sd="clr-namespace:System.Data;assembly=System.Data"
+ xmlns:snm="clr-namespace:System.Net.Mail;assembly=System"
  xmlns:this="clr-namespace:"
  xmlns:ui="http://schemas.uipath.com/workflow/activities"
  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
@@ -71,6 +72,7 @@
       <AssemblyReference>System.ServiceModel</AssemblyReference>
       <AssemblyReference>System.Runtime.WindowsRuntime</AssemblyReference>
       <AssemblyReference>System.Data.DataSetExtensions</AssemblyReference>
+      <AssemblyReference>Microsoft.VisualStudio.Services.Common</AssemblyReference>
     </sco:Collection>
   </TextExpression.ReferencesForImplementation>
   <Flowchart sap2010:WorkflowViewState.IdRef="Flowchart_1">
@@ -80,375 +82,118 @@
       <Variable x:TypeArguments="x:String" Name="nr" />
       <Variable x:TypeArguments="x:String" Default="https://e-seimas.lrs.lt/" Name="seimasPath" />
       <Variable x:TypeArguments="sd:DataTable" Default="[New System.Data.DataTable]" Name="susijeUrlDT" />
+      <Variable x:TypeArguments="scg:List(x:String)" Name="allNr" />
     </Flowchart.Variables>
     <Flowchart.StartNode>
-      <FlowStep x:Name="__ReferenceID0" sap2010:WorkflowViewState.IdRef="FlowStep_2">
-        <Sequence DisplayName="Recording Sequence" sap2010:WorkflowViewState.IdRef="Sequence_13">
-          <ui:OpenBrowser UiBrowser="{x:Null}" BrowserType="IE" DisplayName="Open http://www.lrs.lt/pls/proj/dokpaieska.derinimui_l?p_org=18" Hidden="False" sap2010:WorkflowViewState.IdRef="OpenBrowser_2" NewSession="True" Private="False" Url="http://www.lrs.lt/pls/proj/dokpaieska.derinimui_l?p_org=18">
-            <ui:OpenBrowser.Body>
-              <ActivityAction x:TypeArguments="x:Object">
-                <ActivityAction.Argument>
-                  <DelegateInArgument x:TypeArguments="x:Object" Name="ContextTarget" />
-                </ActivityAction.Argument>
-              </ActivityAction>
-            </ui:OpenBrowser.Body>
-          </ui:OpenBrowser>
-          <Sequence DisplayName="Data scraping" sap2010:WorkflowViewState.IdRef="Sequence_183">
-            <Sequence.Variables>
-              <Variable x:TypeArguments="sd:DataTable" Default="[New System.Data.DataTable]" Name="ExtractDataTable" />
-              <Variable x:TypeArguments="sd:DataTable" Name="resultsDT" />
-            </Sequence.Variables>
-            <ui:BrowserScope Browser="{x:Null}" SearchScope="{x:Null}" TimeoutMS="{x:Null}" UiBrowser="{x:Null}" BrowserType="IE" DisplayName="Get docUrlDT" sap2010:WorkflowViewState.IdRef="BrowserScope_23" InformativeScreenshot="f1979cc184e2567dfc6d7aa64dfaef61" Selector="&lt;html title='Teisės aktų projektai - Išvadų teikimas - Lietuvos Respublikos k*' /&gt;">
-              <ui:BrowserScope.Body>
-                <ActivityAction x:TypeArguments="x:Object">
-                  <ActivityAction.Argument>
-                    <DelegateInArgument x:TypeArguments="x:Object" Name="ContextTarget" />
-                  </ActivityAction.Argument>
-                  <Sequence DisplayName="Do" sap2010:WorkflowViewState.IdRef="Sequence_172">
-                    <ui:ExtractData NextLinkSelector="{x:Null}" ContinueOnError="True" DataTable="[docUrlDT]" DelayBetweenPagesMS="300" DisplayName="Extract Structured Data 'TABLE'" ExtractMetadata="&lt;extract&gt;&lt;row exact='1'&gt;&lt;webctrl tag='tbody' idx='1' /&gt;&lt;webctrl tag='tr' /&gt;&lt;/row&gt;&lt;column name='URL' attr='href' exact='1'&gt;&lt;webctrl tag='tbody' idx='1' /&gt;&lt;webctrl tag='tr' /&gt;&lt;webctrl class='lt' tag='td' /&gt;&lt;webctrl class='dpav' tag='span' idx='1' /&gt;&lt;webctrl tag='a' idx='1' /&gt;&lt;/column&gt;&lt;column name='Data' attr='text' exact='1'&gt;&lt;webctrl tag='tbody' idx='1' /&gt;&lt;webctrl tag='tr' /&gt;&lt;webctrl class='lt' tag='td' idx='2' /&gt;&lt;webctrl class='ddat' tag='span' idx='1' /&gt;&lt;/column&gt;&lt;column name='Nr.' attr='text' exact='1'&gt;&lt;webctrl tag='tbody' idx='1' /&gt;&lt;webctrl tag='tr' /&gt;&lt;webctrl class='lt' tag='td' idx='3' /&gt;&lt;webctrl class='dnr' tag='span' idx='1' /&gt;&lt;webctrl tag='nobr' idx='1' /&gt;&lt;/column&gt;&lt;column name='Tipas' attr='text' exact='1'&gt;&lt;webctrl tag='tbody' idx='1' /&gt;&lt;webctrl tag='tr' /&gt;&lt;webctrl class='lt' tag='td' idx='4' /&gt;&lt;webctrl class='dtip' tag='span' idx='1' /&gt;&lt;/column&gt;&lt;column name='Gauta derinimui' attr='text' exact='1'&gt;&lt;webctrl tag='tbody' idx='1' /&gt;&lt;webctrl tag='tr' /&gt;&lt;webctrl class='lt' tag='td' idx='5' /&gt;&lt;webctrl class='ddat' tag='span' idx='1' /&gt;&lt;webctrl tag='b' idx='1' /&gt;&lt;webctrl tag='font' idx='1' /&gt;&lt;/column&gt;&lt;column name='Išvadas teikti iki' attr='text' exact='1'&gt;&lt;webctrl tag='tbody' idx='1' /&gt;&lt;webctrl tag='tr' /&gt;&lt;webctrl class='lt' tag='td' idx='6' /&gt;&lt;webctrl class='ddat' tag='span' idx='1' /&gt;&lt;webctrl tag='b' idx='1' /&gt;&lt;webctrl tag='font' idx='1' /&gt;&lt;/column&gt;&lt;/extract&gt;" sap2010:WorkflowViewState.IdRef="ExtractData_14" MaxNumberOfResults="10">
-                      <ui:ExtractData.Target>
-                        <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="62c5c79cca1b06c7a281e8b11927dca9" Selector="&lt;webctrl aaname='Eil. nr. Dokumentas Data Nr. Tipas Gauta derinimui Išvadas teikt*' tableRow='1' tag='TABLE' /&gt;" WaitForReady="COMPLETE" />
-                      </ui:ExtractData.Target>
-                    </ui:ExtractData>
-                  </Sequence>
-                </ActivityAction>
-              </ui:BrowserScope.Body>
-            </ui:BrowserScope>
-            <ui:ForEachRow DataTable="[docUrlDT]" DisplayName="For each row in docUrlDT" sap2010:WorkflowViewState.IdRef="ForEachRow_12">
-              <ui:ForEachRow.Body>
-                <ActivityAction x:TypeArguments="sd:DataRow">
-                  <ActivityAction.Argument>
-                    <DelegateInArgument x:TypeArguments="sd:DataRow" Name="row" />
-                  </ActivityAction.Argument>
-                  <Sequence sap2010:WorkflowViewState.IdRef="Sequence_184">
-                    <Sequence DisplayName="Create resultsDT" sap2010:WorkflowViewState.IdRef="Sequence_182">
-                      <ui:BuildDataTable DataTable="[resultsDT]" DisplayName="Build data table" sap2010:WorkflowViewState.IdRef="BuildDataTable_4" TableInfo="&lt;NewDataSet&gt;&#xA;  &lt;xs:schema id=&quot;NewDataSet&quot; xmlns=&quot;&quot; xmlns:xs=&quot;http://www.w3.org/2001/XMLSchema&quot; xmlns:msdata=&quot;urn:schemas-microsoft-com:xml-msdata&quot;&gt;&#xA;    &lt;xs:element name=&quot;NewDataSet&quot; msdata:IsDataSet=&quot;true&quot; msdata:MainDataTable=&quot;TableName&quot; msdata:UseCurrentLocale=&quot;true&quot;&gt;&#xA;      &lt;xs:complexType&gt;&#xA;        &lt;xs:choice minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;&#xA;          &lt;xs:element name=&quot;TableName&quot;&gt;&#xA;            &lt;xs:complexType&gt;&#xA;            &lt;/xs:complexType&gt;&#xA;          &lt;/xs:element&gt;&#xA;        &lt;/xs:choice&gt;&#xA;      &lt;/xs:complexType&gt;&#xA;    &lt;/xs:element&gt;&#xA;  &lt;/xs:schema&gt;&#xA;&lt;/NewDataSet&gt;" />
-                      <ui:ForEach x:TypeArguments="sd:DataColumn" DisplayName="For each" sap2010:WorkflowViewState.IdRef="ForEach`1_4" Values="[docUrlDT.Columns]">
-                        <ui:ForEach.Body>
-                          <ActivityAction x:TypeArguments="sd:DataColumn">
-                            <ActivityAction.Argument>
-                              <DelegateInArgument x:TypeArguments="sd:DataColumn" Name="item" />
-                            </ActivityAction.Argument>
-                            <Sequence DisplayName="Body" sap2010:WorkflowViewState.IdRef="Sequence_173">
-                              <ui:AddDataColumn x:TypeArguments="x:String" Column="{x:Null}" DefaultValue="{x:Null}" AllowDBNull="True" AutoIncrement="False" ColumnName="[item.ColumnName]" DataTable="[resultsDT]" DisplayName="Add data column" sap2010:WorkflowViewState.IdRef="AddDataColumn`1_6" MaxLength="100" Unique="False" />
-                            </Sequence>
-                          </ActivityAction>
-                        </ui:ForEach.Body>
-                      </ui:ForEach>
-                      <ui:AddDataRow DataRow="{x:Null}" ArrayRow="[row.ItemArray]" DataTable="[resultsDT]" DisplayName="Add data row" sap2010:WorkflowViewState.IdRef="AddDataRow_4" />
-                    </Sequence>
-                    <If Condition="[row(1).ToString = day]" DisplayName="If row(1).ToString = day" sap2010:WorkflowViewState.IdRef="If_7">
-                      <If.Then>
-                        <ui:ExcelApplicationScope Password="{x:Null}" DisplayName="Create results.xlsx file" sap2010:WorkflowViewState.IdRef="ExcelApplicationScope_21" WorkbookPath="results.xlsx">
-                          <ui:ExcelApplicationScope.Body>
-                            <ActivityAction x:TypeArguments="ui:WorkbookApplication">
-                              <ActivityAction.Argument>
-                                <DelegateInArgument x:TypeArguments="ui:WorkbookApplication" Name="ExcelWorkbookScope" />
-                              </ActivityAction.Argument>
-                              <Sequence DisplayName="Do" sap2010:WorkflowViewState.IdRef="Sequence_181">
-                                <Sequence.Variables>
-                                  <Variable x:TypeArguments="x:String" Default="C:\Users\Bronius\Desktop\Task1(v4)\" Name="path" />
-                                </Sequence.Variables>
-                                <ui:ClearDataTable DataTable="[susijeUrlDT]" DisplayName="Clear data table" sap2010:WorkflowViewState.IdRef="ClearDataTable_2" />
-                                <ui:ExcelAppendRange DataTable="[resultsDT]" DisplayName="Append Range to results.xlsx" sap2010:WorkflowViewState.IdRef="ExcelAppendRange_18" SheetName="Sheet1" />
-                                <ui:CreateDirectory ContinueOnError="{x:Null}" DisplayName="Create directory" sap2010:WorkflowViewState.IdRef="CreateDirectory_9" Path="[path + day + &quot;\&quot; + row(2).ToString]" />
-                                <Sequence DisplayName="Save attachments" sap2010:WorkflowViewState.IdRef="Sequence_180">
-                                  <Sequence DisplayName="Save doc, susije doc" sap2010:WorkflowViewState.IdRef="Sequence_246">
-                                    <ui:OpenBrowser UiBrowser="{x:Null}" BrowserType="Chrome" DisplayName="Open https://e-seimas.lrs.lt/portal/legalAct/lt/TAP/6d27174410ba11e88a05839ea3846d8e" Hidden="False" sap2010:WorkflowViewState.IdRef="OpenBrowser_15" NewSession="True" Private="False" Url="[&quot;http://www.lrs.lt/pls/proj/&quot; + row(0).ToString]">
-                                      <ui:OpenBrowser.Body>
-                                        <ActivityAction x:TypeArguments="x:Object">
-                                          <ActivityAction.Argument>
-                                            <DelegateInArgument x:TypeArguments="x:Object" Name="ContextTarget" />
-                                          </ActivityAction.Argument>
-                                          <Sequence sap2010:WorkflowViewState.IdRef="Sequence_282">
-                                            <Sequence DisplayName="Save doc" sap2010:WorkflowViewState.IdRef="Sequence_269">
-                                              <ui:Click DelayBefore="{x:Null}" DelayMS="{x:Null}" ClickType="CLICK_SINGLE" DisplayName="Click 'A '" sap2010:WorkflowViewState.IdRef="Click_137" KeyModifiers="None" MouseButton="BTN_LEFT" SendWindowMessages="False" SimulateClick="True">
-                                                <ui:Click.CursorPosition>
-                                                  <ui:CursorPosition OffsetX="8" OffsetY="12" Position="TopLeft" />
-                                                </ui:Click.CursorPosition>
-                                                <ui:Click.Target>
-                                                  <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="a1d5e21620d9841f6864cc8605d4d2fa" Selector="&lt;webctrl href='/rs/legalact/TAP/*/format/MSO2010*' parentid='mainForm:j_id_bk' tag='A' /&gt;" WaitForReady="COMPLETE" />
-                                                </ui:Click.Target>
-                                              </ui:Click>
-                                              <ui:WindowScope ApplicationWindow="{x:Null}" SearchScope="{x:Null}" TimeoutMS="{x:Null}" Window="{x:Null}" DisplayName="Save file to folder" sap2010:WorkflowViewState.IdRef="WindowScope_57" InformativeScreenshot="79dfab1251f99b6bebc5a5251adf3e9c" Selector="&lt;wnd app='chrome.exe' cls='#32770' title='Save As' /&gt;">
-                                                <ui:WindowScope.Body>
-                                                  <ActivityAction x:TypeArguments="x:Object">
-                                                    <ActivityAction.Argument>
-                                                      <DelegateInArgument x:TypeArguments="x:Object" Name="ContextTarget" />
-                                                    </ActivityAction.Argument>
-                                                    <Sequence DisplayName="Do" sap2010:WorkflowViewState.IdRef="Sequence_268">
-                                                      <ui:Click DelayBefore="{x:Null}" DelayMS="{x:Null}" ClickType="CLICK_SINGLE" DisplayName="Click 'push button'" sap2010:WorkflowViewState.IdRef="Click_138" KeyModifiers="None" MouseButton="BTN_LEFT" SendWindowMessages="False" SimulateClick="False">
-                                                        <ui:Click.CursorPosition>
-                                                          <ui:CursorPosition Position="Center">
-                                                            <ui:CursorPosition.OffsetX>
-                                                              <InArgument x:TypeArguments="x:Int32" />
-                                                            </ui:CursorPosition.OffsetX>
-                                                            <ui:CursorPosition.OffsetY>
-                                                              <InArgument x:TypeArguments="x:Int32" />
-                                                            </ui:CursorPosition.OffsetY>
-                                                          </ui:CursorPosition>
-                                                        </ui:Click.CursorPosition>
-                                                        <ui:Click.Target>
-                                                          <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="d38ec690bf92a51d55d14cf2ee247a18" Selector="&lt;wnd cls='ToolbarWindow32' title='Address band toolbar' /&gt;&lt;ctrl name='Address band toolbar' role='tool bar' /&gt;&lt;ctrl name='Previous Locations' role='push button' /&gt;" WaitForReady="INTERACTIVE" />
-                                                        </ui:Click.Target>
-                                                      </ui:Click>
-                                                      <Assign sap2010:WorkflowViewState.IdRef="Assign_2">
-                                                        <Assign.To>
-                                                          <OutArgument x:TypeArguments="x:String">[nr]</OutArgument>
-                                                        </Assign.To>
-                                                        <Assign.Value>
-                                                          <InArgument x:TypeArguments="x:String">[row(2).ToString]</InArgument>
-                                                        </Assign.Value>
-                                                      </Assign>
-                                                      <ui:TypeInto DelayBefore="{x:Null}" DelayBetweenKeys="{x:Null}" DelayMS="{x:Null}" Activate="True" ClickBeforeTyping="False" DisplayName="Type into 'ToolbarWindow32'" EmptyField="True" sap2010:WorkflowViewState.IdRef="TypeInto_56" SendWindowMessages="False" SimulateType="False" Text="[path + day + &quot;\&quot;+nr + &quot;[k(enter)]&quot;]">
-                                                        <ui:TypeInto.Target>
-                                                          <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="e3dcfe72b3e930939aa6aa10e81b981d" Selector="&lt;wnd ctrlid='1001' title='Address: *' /&gt;" WaitForReady="INTERACTIVE" />
-                                                        </ui:TypeInto.Target>
-                                                      </ui:TypeInto>
-                                                      <ui:Click DelayBefore="{x:Null}" DelayMS="{x:Null}" ClickType="CLICK_SINGLE" DisplayName="Click 'Button'" sap2010:WorkflowViewState.IdRef="Click_139" KeyModifiers="None" MouseButton="BTN_LEFT" SendWindowMessages="False" SimulateClick="False">
-                                                        <ui:Click.CursorPosition>
-                                                          <ui:CursorPosition OffsetX="57" OffsetY="11" Position="TopLeft" />
-                                                        </ui:Click.CursorPosition>
-                                                        <ui:Click.Target>
-                                                          <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="1400303c396c97e4e14fd10b66ba1f68" Selector="&lt;wnd ctrlid='1' title='&amp;amp;Save' /&gt;" WaitForReady="INTERACTIVE" />
-                                                        </ui:Click.Target>
-                                                      </ui:Click>
-                                                    </Sequence>
-                                                  </ActivityAction>
-                                                </ui:WindowScope.Body>
-                                              </ui:WindowScope>
-                                            </Sequence>
-                                            <ui:BrowserScope Browser="{x:Null}" SearchScope="{x:Null}" TimeoutMS="{x:Null}" UiBrowser="{x:Null}" BrowserType="Chrome" DisplayName="Attach Browser 'S2 500D l Page'" sap2010:WorkflowViewState.IdRef="BrowserScope_38" InformativeScreenshot="07f76a4671676f2035cb30a3c562337b" Selector="&lt;html app='chrome.exe' title='*' /&gt;">
-                                              <ui:BrowserScope.Body>
-                                                <ActivityAction x:TypeArguments="x:Object">
-                                                  <ActivityAction.Argument>
-                                                    <DelegateInArgument x:TypeArguments="x:Object" Name="ContextTarget" />
-                                                  </ActivityAction.Argument>
-                                                  <Sequence sap2010:WorkflowViewState.IdRef="Sequence_281">
-                                                    <ui:TypeInto DelayBefore="{x:Null}" DelayBetweenKeys="{x:Null}" DelayMS="{x:Null}" Activate="True" ClickBeforeTyping="False" DisplayName="Type into 'editable text'" EmptyField="True" sap2010:WorkflowViewState.IdRef="TypeInto_61" SendWindowMessages="False" SimulateType="False" Text="[&quot;http://www.lrs.lt/pls/proj/&quot; + row(0).ToString + &quot;[k(enter)]&quot;]">
-                                                      <ui:TypeInto.Target>
-                                                        <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="64ac7d7880aedf333acacedc2b00b2d2" Selector="&lt;ctrl name='Google Chrome' role='client' /&gt;&lt;ctrl name='main' role='tool bar' /&gt;&lt;ctrl name='Address and search bar' role='editable text' /&gt;" WaitForReady="INTERACTIVE" />
-                                                      </ui:TypeInto.Target>
-                                                    </ui:TypeInto>
-                                                    <Sequence DisplayName="Save susije doc" sap2010:WorkflowViewState.IdRef="Sequence_279">
-                                                      <Sequence.Variables>
-                                                        <Variable x:TypeArguments="ui:UiElement" Name="H" />
-                                                      </Sequence.Variables>
-                                                      <Sequence DisplayName="Do" sap2010:WorkflowViewState.IdRef="Sequence_270">
-                                                        <ui:WaitUiElementAppear DisplayName="Find Element 'H3'" FoundElement="[H]" sap2010:WorkflowViewState.IdRef="WaitUiElementAppear_23" WaitActive="False" WaitVisible="False">
-                                                          <ui:WaitUiElementAppear.Target>
-                                                            <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="c5c6e3686d861aea41affdabe2d3c745" Selector="&lt;webctrl tag='H3' /&gt;" WaitForReady="COMPLETE" />
-                                                          </ui:WaitUiElementAppear.Target>
-                                                        </ui:WaitUiElementAppear>
-                                                        <ui:Click DelayBefore="{x:Null}" DelayMS="{x:Null}" ClickType="CLICK_SINGLE" DisplayName="Click 'H3'" sap2010:WorkflowViewState.IdRef="Click_140" KeyModifiers="None" MouseButton="BTN_LEFT" SendWindowMessages="False" SimulateClick="True">
-                                                          <ui:Click.CursorPosition>
-                                                            <ui:CursorPosition OffsetX="132" OffsetY="21" Position="TopLeft" />
-                                                          </ui:Click.CursorPosition>
-                                                          <ui:Click.Target>
-                                                            <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="c5c6e3686d861aea41affdabe2d3c745" Selector="&lt;webctrl tag='H3' /&gt;" WaitForReady="COMPLETE" />
-                                                          </ui:Click.Target>
-                                                        </ui:Click>
-                                                      </Sequence>
-                                                      <ui:CommentOut DisplayName="Comment out" sap2010:WorkflowViewState.IdRef="CommentOut_14">
-                                                        <ui:CommentOut.Body>
-                                                          <Sequence DisplayName="Ignored Activities" sap2010:WorkflowViewState.IdRef="Sequence_271">
-                                                            <ui:WaitUiElementAppear DisplayName="Find Element 'H3'" FoundElement="[H]" sap2010:WorkflowViewState.IdRef="WaitUiElementAppear_24" WaitActive="False" WaitVisible="False">
-                                                              <ui:WaitUiElementAppear.Target>
-                                                                <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="df0af87e02173cf8211e8d89442ac741" Selector="&lt;webctrl tabindex='-1' tag='H3' /&gt;" WaitForReady="COMPLETE" />
-                                                              </ui:WaitUiElementAppear.Target>
-                                                            </ui:WaitUiElementAppear>
-                                                            <ui:Click DelayBefore="{x:Null}" DelayMS="{x:Null}" ClickType="CLICK_SINGLE" sap2010:WorkflowViewState.IdRef="Click_141" KeyModifiers="None" MouseButton="BTN_LEFT" SendWindowMessages="False" SimulateClick="False">
-                                                              <ui:Click.CursorPosition>
-                                                                <ui:CursorPosition Position="Center">
-                                                                  <ui:CursorPosition.OffsetX>
-                                                                    <InArgument x:TypeArguments="x:Int32" />
-                                                                  </ui:CursorPosition.OffsetX>
-                                                                  <ui:CursorPosition.OffsetY>
-                                                                    <InArgument x:TypeArguments="x:Int32" />
-                                                                  </ui:CursorPosition.OffsetY>
-                                                                </ui:CursorPosition>
-                                                              </ui:Click.CursorPosition>
-                                                              <ui:Click.Target>
-                                                                <ui:Target ClippingRegion="{x:Null}" Selector="{x:Null}" TimeoutMS="{x:Null}" Element="[H]" WaitForReady="INTERACTIVE" />
-                                                              </ui:Click.Target>
-                                                            </ui:Click>
-                                                          </Sequence>
-                                                        </ui:CommentOut.Body>
-                                                      </ui:CommentOut>
-                                                      <Sequence DisplayName="Data scraping" sap2010:WorkflowViewState.IdRef="Sequence_278">
-                                                        <ui:BrowserScope Browser="{x:Null}" SearchScope="{x:Null}" TimeoutMS="{x:Null}" UiBrowser="{x:Null}" BrowserType="Chrome" DisplayName="Attach Browser 'D lradijo Page'" sap2010:WorkflowViewState.IdRef="BrowserScope_37" InformativeScreenshot="c8b3e29855c95a891a81dea8e1e9b9ee" Selector="&lt;html app='chrome.exe' title='*' /&gt;">
-                                                          <ui:BrowserScope.Body>
-                                                            <ActivityAction x:TypeArguments="x:Object">
-                                                              <ActivityAction.Argument>
-                                                                <DelegateInArgument x:TypeArguments="x:Object" Name="ContextTarget" />
-                                                              </ActivityAction.Argument>
-                                                              <Sequence sap2010:WorkflowViewState.IdRef="Sequence_273">
-                                                                <Sequence DisplayName="Do" sap2010:WorkflowViewState.IdRef="Sequence_272">
-                                                                  <ui:ExtractData NextLinkSelector="{x:Null}" ContinueOnError="True" DataTable="[susijeUrlDT]" DelayBetweenPagesMS="300" DisplayName="Extract Structured Data 'DIV  mainForm:accordion...'" ExtractMetadata="&lt;extract&gt;&lt;column exact='1' name='URL' attr='href'&gt;&lt;webctrl tag='div' class='ui-datalist ui-widget'/&gt;&lt;webctrl tag='div' class='ui-datalist-content ui-widget-content' idx='1'/&gt;&lt;webctrl tag='div'/&gt;&lt;webctrl tag='a' class='actualEditionLink' idx='1'/&gt;&lt;/column&gt;&lt;/extract&gt;" sap2010:WorkflowViewState.IdRef="ExtractData_23" MaxNumberOfResults="100">
-                                                                    <ui:ExtractData.Target>
-                                                                      <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="4c3623a887d95bffb5f2db82309ec317" Selector="&lt;webctrl id='mainForm:accordionRight:tabRelatedDocuments' tag='DIV' /&gt;" WaitForReady="COMPLETE" />
-                                                                    </ui:ExtractData.Target>
-                                                                  </ui:ExtractData>
-                                                                </Sequence>
-                                                              </Sequence>
-                                                            </ActivityAction>
-                                                          </ui:BrowserScope.Body>
-                                                        </ui:BrowserScope>
-                                                        <ui:ExcelApplicationScope Password="{x:Null}" DisplayName="Excel application scope" sap2010:WorkflowViewState.IdRef="ExcelApplicationScope_30" WorkbookPath="susijeDT.xlsx">
-                                                          <ui:ExcelApplicationScope.Body>
-                                                            <ActivityAction x:TypeArguments="ui:WorkbookApplication">
-                                                              <ActivityAction.Argument>
-                                                                <DelegateInArgument x:TypeArguments="ui:WorkbookApplication" Name="ExcelWorkbookScope" />
-                                                              </ActivityAction.Argument>
-                                                              <Sequence DisplayName="Do" sap2010:WorkflowViewState.IdRef="Sequence_274">
-                                                                <ui:ExcelAppendRange DataTable="[susijeUrlDT]" DisplayName="Append Range" sap2010:WorkflowViewState.IdRef="ExcelAppendRange_27" SheetName="Sheet1" />
-                                                              </Sequence>
-                                                            </ActivityAction>
-                                                          </ui:ExcelApplicationScope.Body>
-                                                        </ui:ExcelApplicationScope>
-                                                        <ui:ForEachRow DataTable="[susijeUrlDT]" DisplayName="For each row" sap2010:WorkflowViewState.IdRef="ForEachRow_21">
-                                                          <ui:ForEachRow.Body>
-                                                            <ActivityAction x:TypeArguments="sd:DataRow">
-                                                              <ActivityAction.Argument>
-                                                                <DelegateInArgument x:TypeArguments="sd:DataRow" Name="url" />
-                                                              </ActivityAction.Argument>
-                                                              <Sequence DisplayName="Body" sap2010:WorkflowViewState.IdRef="Sequence_277">
-                                                                <ui:WindowScope ApplicationWindow="{x:Null}" SearchScope="{x:Null}" TimeoutMS="{x:Null}" Window="{x:Null}" DisplayName="Attach Window 'D lradijo Page'" sap2010:WorkflowViewState.IdRef="WindowScope_58" InformativeScreenshot="2c32caaa15a2f77b36cd6a4202f6077b" Selector="&lt;html app='chrome.exe' title='*' /&gt;">
-                                                                  <ui:WindowScope.Body>
-                                                                    <ActivityAction x:TypeArguments="x:Object">
-                                                                      <ActivityAction.Argument>
-                                                                        <DelegateInArgument x:TypeArguments="x:Object" Name="ContextTarget" />
-                                                                      </ActivityAction.Argument>
-                                                                      <Sequence DisplayName="Do" sap2010:WorkflowViewState.IdRef="Sequence_275">
-                                                                        <ui:TypeInto DelayBefore="{x:Null}" DelayBetweenKeys="{x:Null}" DelayMS="{x:Null}" Activate="True" ClickBeforeTyping="False" DisplayName="Type into 'editable text'" EmptyField="True" sap2010:WorkflowViewState.IdRef="TypeInto_57" SendWindowMessages="False" SimulateType="False" Text="[seimasPath + url(0).ToString + &quot;[k(enter)]&quot;]">
-                                                                          <ui:TypeInto.Target>
-                                                                            <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="08638ade500afcffe8a373d266206026" Selector="&lt;ctrl name='Google Chrome' role='client' /&gt;&lt;ctrl name='main' role='tool bar' /&gt;&lt;ctrl name='Address and search bar' role='editable text' /&gt;" WaitForReady="INTERACTIVE" />
-                                                                          </ui:TypeInto.Target>
-                                                                        </ui:TypeInto>
-                                                                        <ui:Click DelayBefore="{x:Null}" DelayMS="{x:Null}" ClickType="CLICK_SINGLE" DisplayName="Click 'IMG  mainForm:j_id_c5'" sap2010:WorkflowViewState.IdRef="Click_142" KeyModifiers="None" MouseButton="BTN_LEFT" SendWindowMessages="False" SimulateClick="False">
-                                                                          <ui:Click.CursorPosition>
-                                                                            <ui:CursorPosition Position="Center">
-                                                                              <ui:CursorPosition.OffsetX>
-                                                                                <InArgument x:TypeArguments="x:Int32" />
-                                                                              </ui:CursorPosition.OffsetX>
-                                                                              <ui:CursorPosition.OffsetY>
-                                                                                <InArgument x:TypeArguments="x:Int32" />
-                                                                              </ui:CursorPosition.OffsetY>
-                                                                            </ui:CursorPosition>
-                                                                          </ui:Click.CursorPosition>
-                                                                          <ui:Click.Target>
-                                                                            <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="96ce5020f981efdf276576887c88f8cb" Selector="&lt;webctrl id='mainForm:j_id_c5' tag='IMG' /&gt;" WaitForReady="INTERACTIVE" />
-                                                                          </ui:Click.Target>
-                                                                        </ui:Click>
-                                                                      </Sequence>
-                                                                    </ActivityAction>
-                                                                  </ui:WindowScope.Body>
-                                                                </ui:WindowScope>
-                                                                <ui:WindowScope ApplicationWindow="{x:Null}" SearchScope="{x:Null}" TimeoutMS="{x:Null}" Window="{x:Null}" DisplayName="Attach Window 'SaveAs Dialog'" sap2010:WorkflowViewState.IdRef="WindowScope_59" InformativeScreenshot="79dfab1251f99b6bebc5a5251adf3e9c" Selector="&lt;wnd app='chrome.exe' cls='#32770' title='Save As' /&gt;">
-                                                                  <ui:WindowScope.Body>
-                                                                    <ActivityAction x:TypeArguments="x:Object">
-                                                                      <ActivityAction.Argument>
-                                                                        <DelegateInArgument x:TypeArguments="x:Object" Name="ContextTarget" />
-                                                                      </ActivityAction.Argument>
-                                                                      <Sequence DisplayName="Do" sap2010:WorkflowViewState.IdRef="Sequence_276">
-                                                                        <ui:Click DelayBefore="{x:Null}" DelayMS="{x:Null}" ClickType="CLICK_SINGLE" DisplayName="Click 'push button'" sap2010:WorkflowViewState.IdRef="Click_143" KeyModifiers="None" MouseButton="BTN_LEFT" SendWindowMessages="False" SimulateClick="False">
-                                                                          <ui:Click.CursorPosition>
-                                                                            <ui:CursorPosition Position="Center">
-                                                                              <ui:CursorPosition.OffsetX>
-                                                                                <InArgument x:TypeArguments="x:Int32" />
-                                                                              </ui:CursorPosition.OffsetX>
-                                                                              <ui:CursorPosition.OffsetY>
-                                                                                <InArgument x:TypeArguments="x:Int32" />
-                                                                              </ui:CursorPosition.OffsetY>
-                                                                            </ui:CursorPosition>
-                                                                          </ui:Click.CursorPosition>
-                                                                          <ui:Click.Target>
-                                                                            <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="d38ec690bf92a51d55d14cf2ee247a18" Selector="&lt;wnd cls='ToolbarWindow32' title='Address band toolbar' /&gt;&lt;ctrl name='Address band toolbar' role='tool bar' /&gt;&lt;ctrl name='Previous Locations' role='push button' /&gt;" WaitForReady="INTERACTIVE" />
-                                                                          </ui:Click.Target>
-                                                                        </ui:Click>
-                                                                        <ui:TypeInto DelayBefore="{x:Null}" DelayBetweenKeys="{x:Null}" DelayMS="{x:Null}" Activate="True" ClickBeforeTyping="False" DisplayName="Type into 'ToolbarWindow32'" EmptyField="True" sap2010:WorkflowViewState.IdRef="TypeInto_58" SendWindowMessages="False" SimulateType="False" Text="[path +day + &quot;\&quot; + nr + &quot;[k(enter)]&quot;]">
-                                                                          <ui:TypeInto.Target>
-                                                                            <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="e3dcfe72b3e930939aa6aa10e81b981d" Selector="&lt;wnd ctrlid='1001' title='Address: *' /&gt;" WaitForReady="INTERACTIVE" />
-                                                                          </ui:TypeInto.Target>
-                                                                        </ui:TypeInto>
-                                                                        <ui:Click DelayBefore="{x:Null}" DelayMS="{x:Null}" ClickType="CLICK_SINGLE" DisplayName="Click 'Button'" sap2010:WorkflowViewState.IdRef="Click_144" KeyModifiers="None" MouseButton="BTN_LEFT" SendWindowMessages="False" SimulateClick="False">
-                                                                          <ui:Click.CursorPosition>
-                                                                            <ui:CursorPosition OffsetX="57" OffsetY="11" Position="TopLeft" />
-                                                                          </ui:Click.CursorPosition>
-                                                                          <ui:Click.Target>
-                                                                            <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="1400303c396c97e4e14fd10b66ba1f68" Selector="&lt;wnd ctrlid='1' title='&amp;amp;Save' /&gt;" WaitForReady="INTERACTIVE" />
-                                                                          </ui:Click.Target>
-                                                                        </ui:Click>
-                                                                      </Sequence>
-                                                                    </ActivityAction>
-                                                                  </ui:WindowScope.Body>
-                                                                </ui:WindowScope>
-                                                              </Sequence>
-                                                            </ActivityAction>
-                                                          </ui:ForEachRow.Body>
-                                                        </ui:ForEachRow>
-                                                      </Sequence>
-                                                    </Sequence>
-                                                    <ui:CommentOut DisplayName="Comment out" sap2010:WorkflowViewState.IdRef="CommentOut_15">
-                                                      <ui:CommentOut.Body>
-                                                        <Sequence DisplayName="Ignored Activities" sap2010:WorkflowViewState.IdRef="Sequence_280">
-                                                          <TryCatch DisplayName="Try catch" sap2010:WorkflowViewState.IdRef="TryCatch_2">
-                                                            <TryCatch.Catches>
-                                                              <Catch x:TypeArguments="s:Exception" sap2010:WorkflowViewState.IdRef="Catch`1_3">
-                                                                <ActivityAction x:TypeArguments="s:Exception">
-                                                                  <ActivityAction.Argument>
-                                                                    <DelegateInArgument x:TypeArguments="s:Exception" Name="exception" />
-                                                                  </ActivityAction.Argument>
-                                                                </ActivityAction>
-                                                              </Catch>
-                                                            </TryCatch.Catches>
-                                                          </TryCatch>
-                                                        </Sequence>
-                                                      </ui:CommentOut.Body>
-                                                    </ui:CommentOut>
-                                                  </Sequence>
-                                                </ActivityAction>
-                                              </ui:BrowserScope.Body>
-                                            </ui:BrowserScope>
-                                            <ui:CommentOut DisplayName="Comment out" sap2010:WorkflowViewState.IdRef="CommentOut_16">
-                                              <ui:CommentOut.Body>
-                                                <Sequence DisplayName="Ignored Activities" sap2010:WorkflowViewState.IdRef="Sequence_285" />
-                                              </ui:CommentOut.Body>
-                                            </ui:CommentOut>
-                                          </Sequence>
-                                        </ActivityAction>
-                                      </ui:OpenBrowser.Body>
-                                    </ui:OpenBrowser>
-                                  </Sequence>
-                                  <TryCatch DisplayName="Try catch" sap2010:WorkflowViewState.IdRef="TryCatch_3">
-                                    <TryCatch.Try>
-                                      <Sequence DisplayName="Save prideti doc" sap2010:WorkflowViewState.IdRef="Sequence_307">
-                                        <ui:OpenBrowser UiBrowser="{x:Null}" BrowserType="Chrome" DisplayName="Open https://e-seimas.lrs.lt/portal/legalAct/lt/TAP/6d27174410ba11e88a05839ea3846d8e" Hidden="False" sap2010:WorkflowViewState.IdRef="OpenBrowser_16" NewSession="True" Private="False" Url="[&quot;http://www.lrs.lt/pls/proj/&quot; + row(0).ToString]">
+      <FlowStep x:Name="__ReferenceID2" sap2010:WorkflowViewState.IdRef="FlowStep_35">
+        <Sequence DisplayName="Init allNr list" sap2010:WorkflowViewState.IdRef="Sequence_321">
+          <Assign DisplayName="Init list" sap2010:WorkflowViewState.IdRef="Assign_17">
+            <Assign.To>
+              <OutArgument x:TypeArguments="scg:List(x:String)">[allNr]</OutArgument>
+            </Assign.To>
+            <Assign.Value>
+              <InArgument x:TypeArguments="scg:List(x:String)">[new List(of string)]</InArgument>
+            </Assign.Value>
+          </Assign>
+        </Sequence>
+        <FlowStep.Next>
+          <FlowStep x:Name="__ReferenceID0" sap2010:WorkflowViewState.IdRef="FlowStep_2">
+            <Sequence DisplayName="Recording Sequence" sap2010:WorkflowViewState.IdRef="Sequence_13">
+              <ui:OpenBrowser UiBrowser="{x:Null}" BrowserType="IE" DisplayName="Open http://www.lrs.lt/pls/proj/dokpaieska.derinimui_l?p_org=18" Hidden="False" sap2010:WorkflowViewState.IdRef="OpenBrowser_2" NewSession="True" Private="False" Url="http://www.lrs.lt/pls/proj/dokpaieska.derinimui_l?p_org=18">
+                <ui:OpenBrowser.Body>
+                  <ActivityAction x:TypeArguments="x:Object">
+                    <ActivityAction.Argument>
+                      <DelegateInArgument x:TypeArguments="x:Object" Name="ContextTarget" />
+                    </ActivityAction.Argument>
+                  </ActivityAction>
+                </ui:OpenBrowser.Body>
+              </ui:OpenBrowser>
+              <Sequence DisplayName="Data scraping" sap2010:WorkflowViewState.IdRef="Sequence_183">
+                <Sequence.Variables>
+                  <Variable x:TypeArguments="sd:DataTable" Default="[New System.Data.DataTable]" Name="ExtractDataTable" />
+                  <Variable x:TypeArguments="sd:DataTable" Name="resultsDT" />
+                </Sequence.Variables>
+                <ui:BrowserScope Browser="{x:Null}" SearchScope="{x:Null}" TimeoutMS="{x:Null}" UiBrowser="{x:Null}" BrowserType="IE" DisplayName="Get docUrlDT" sap2010:WorkflowViewState.IdRef="BrowserScope_23" InformativeScreenshot="f1979cc184e2567dfc6d7aa64dfaef61" Selector="&lt;html title='Teisės aktų projektai - Išvadų teikimas - Lietuvos Respublikos k*' /&gt;">
+                  <ui:BrowserScope.Body>
+                    <ActivityAction x:TypeArguments="x:Object">
+                      <ActivityAction.Argument>
+                        <DelegateInArgument x:TypeArguments="x:Object" Name="ContextTarget" />
+                      </ActivityAction.Argument>
+                      <Sequence DisplayName="Do" sap2010:WorkflowViewState.IdRef="Sequence_172">
+                        <ui:ExtractData NextLinkSelector="{x:Null}" ContinueOnError="True" DataTable="[docUrlDT]" DelayBetweenPagesMS="300" DisplayName="Extract Structured Data 'TABLE'" ExtractMetadata="&lt;extract&gt;&lt;row exact='1'&gt;&lt;webctrl tag='tbody' idx='1' /&gt;&lt;webctrl tag='tr' /&gt;&lt;/row&gt;&lt;column name='URL' attr='href' exact='1'&gt;&lt;webctrl tag='tbody' idx='1' /&gt;&lt;webctrl tag='tr' /&gt;&lt;webctrl class='lt' tag='td' /&gt;&lt;webctrl class='dpav' tag='span' idx='1' /&gt;&lt;webctrl tag='a' idx='1' /&gt;&lt;/column&gt;&lt;column name='Data' attr='text' exact='1'&gt;&lt;webctrl tag='tbody' idx='1' /&gt;&lt;webctrl tag='tr' /&gt;&lt;webctrl class='lt' tag='td' idx='2' /&gt;&lt;webctrl class='ddat' tag='span' idx='1' /&gt;&lt;/column&gt;&lt;column name='Nr.' attr='text' exact='1'&gt;&lt;webctrl tag='tbody' idx='1' /&gt;&lt;webctrl tag='tr' /&gt;&lt;webctrl class='lt' tag='td' idx='3' /&gt;&lt;webctrl class='dnr' tag='span' idx='1' /&gt;&lt;webctrl tag='nobr' idx='1' /&gt;&lt;/column&gt;&lt;column name='Tipas' attr='text' exact='1'&gt;&lt;webctrl tag='tbody' idx='1' /&gt;&lt;webctrl tag='tr' /&gt;&lt;webctrl class='lt' tag='td' idx='4' /&gt;&lt;webctrl class='dtip' tag='span' idx='1' /&gt;&lt;/column&gt;&lt;column name='Gauta derinimui' attr='text' exact='1'&gt;&lt;webctrl tag='tbody' idx='1' /&gt;&lt;webctrl tag='tr' /&gt;&lt;webctrl class='lt' tag='td' idx='5' /&gt;&lt;webctrl class='ddat' tag='span' idx='1' /&gt;&lt;webctrl tag='b' idx='1' /&gt;&lt;webctrl tag='font' idx='1' /&gt;&lt;/column&gt;&lt;column name='Išvadas teikti iki' attr='text' exact='1'&gt;&lt;webctrl tag='tbody' idx='1' /&gt;&lt;webctrl tag='tr' /&gt;&lt;webctrl class='lt' tag='td' idx='6' /&gt;&lt;webctrl class='ddat' tag='span' idx='1' /&gt;&lt;webctrl tag='b' idx='1' /&gt;&lt;webctrl tag='font' idx='1' /&gt;&lt;/column&gt;&lt;/extract&gt;" sap2010:WorkflowViewState.IdRef="ExtractData_14" MaxNumberOfResults="10">
+                          <ui:ExtractData.Target>
+                            <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="62c5c79cca1b06c7a281e8b11927dca9" Selector="&lt;webctrl aaname='Eil. nr. Dokumentas Data Nr. Tipas Gauta derinimui Išvadas teikt*' tableRow='1' tag='TABLE' /&gt;" WaitForReady="COMPLETE" />
+                          </ui:ExtractData.Target>
+                        </ui:ExtractData>
+                      </Sequence>
+                    </ActivityAction>
+                  </ui:BrowserScope.Body>
+                </ui:BrowserScope>
+                <ui:ForEachRow DataTable="[docUrlDT]" DisplayName="For each row in docUrlDT" sap2010:WorkflowViewState.IdRef="ForEachRow_12">
+                  <ui:ForEachRow.Body>
+                    <ActivityAction x:TypeArguments="sd:DataRow">
+                      <ActivityAction.Argument>
+                        <DelegateInArgument x:TypeArguments="sd:DataRow" Name="row" />
+                      </ActivityAction.Argument>
+                      <Sequence sap2010:WorkflowViewState.IdRef="Sequence_184">
+                        <Sequence DisplayName="Create resultsDT" sap2010:WorkflowViewState.IdRef="Sequence_182">
+                          <ui:BuildDataTable DataTable="[resultsDT]" DisplayName="Build data table" sap2010:WorkflowViewState.IdRef="BuildDataTable_4" TableInfo="&lt;NewDataSet&gt;&#xA;  &lt;xs:schema id=&quot;NewDataSet&quot; xmlns=&quot;&quot; xmlns:xs=&quot;http://www.w3.org/2001/XMLSchema&quot; xmlns:msdata=&quot;urn:schemas-microsoft-com:xml-msdata&quot;&gt;&#xA;    &lt;xs:element name=&quot;NewDataSet&quot; msdata:IsDataSet=&quot;true&quot; msdata:MainDataTable=&quot;TableName&quot; msdata:UseCurrentLocale=&quot;true&quot;&gt;&#xA;      &lt;xs:complexType&gt;&#xA;        &lt;xs:choice minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;&#xA;          &lt;xs:element name=&quot;TableName&quot;&gt;&#xA;            &lt;xs:complexType&gt;&#xA;            &lt;/xs:complexType&gt;&#xA;          &lt;/xs:element&gt;&#xA;        &lt;/xs:choice&gt;&#xA;      &lt;/xs:complexType&gt;&#xA;    &lt;/xs:element&gt;&#xA;  &lt;/xs:schema&gt;&#xA;&lt;/NewDataSet&gt;" />
+                          <ui:ForEach x:TypeArguments="sd:DataColumn" DisplayName="For each" sap2010:WorkflowViewState.IdRef="ForEach`1_4" Values="[docUrlDT.Columns]">
+                            <ui:ForEach.Body>
+                              <ActivityAction x:TypeArguments="sd:DataColumn">
+                                <ActivityAction.Argument>
+                                  <DelegateInArgument x:TypeArguments="sd:DataColumn" Name="item" />
+                                </ActivityAction.Argument>
+                                <Sequence DisplayName="Body" sap2010:WorkflowViewState.IdRef="Sequence_173">
+                                  <ui:AddDataColumn x:TypeArguments="x:String" Column="{x:Null}" DefaultValue="{x:Null}" AllowDBNull="True" AutoIncrement="False" ColumnName="[item.ColumnName]" DataTable="[resultsDT]" DisplayName="Add data column" sap2010:WorkflowViewState.IdRef="AddDataColumn`1_6" MaxLength="100" Unique="False" />
+                                </Sequence>
+                              </ActivityAction>
+                            </ui:ForEach.Body>
+                          </ui:ForEach>
+                          <ui:AddDataRow DataRow="{x:Null}" ArrayRow="[row.ItemArray]" DataTable="[resultsDT]" DisplayName="Add data row" sap2010:WorkflowViewState.IdRef="AddDataRow_4" />
+                        </Sequence>
+                        <If Condition="[row(1).ToString = day]" DisplayName="If row(1).ToString = day" sap2010:WorkflowViewState.IdRef="If_7">
+                          <If.Then>
+                            <ui:ExcelApplicationScope Password="{x:Null}" DisplayName="Create results.xlsx file" sap2010:WorkflowViewState.IdRef="ExcelApplicationScope_21" WorkbookPath="results.xlsx">
+                              <ui:ExcelApplicationScope.Body>
+                                <ActivityAction x:TypeArguments="ui:WorkbookApplication">
+                                  <ActivityAction.Argument>
+                                    <DelegateInArgument x:TypeArguments="ui:WorkbookApplication" Name="ExcelWorkbookScope" />
+                                  </ActivityAction.Argument>
+                                  <Sequence DisplayName="Do" sap2010:WorkflowViewState.IdRef="Sequence_181">
+                                    <Sequence.Variables>
+                                      <Variable x:TypeArguments="x:String" Default="C:\Users\Bronius\Desktop\Task1(v4)\" Name="path" />
+                                    </Sequence.Variables>
+                                    <AddToCollection x:TypeArguments="x:String" Collection="[allNr]" DisplayName="Add to collection doc nr" sap2010:WorkflowViewState.IdRef="AddToCollection`1_6" Item="[row(2).ToString]" />
+                                    <ui:ClearDataTable DataTable="[susijeUrlDT]" DisplayName="Clear data table" sap2010:WorkflowViewState.IdRef="ClearDataTable_2" />
+                                    <ui:ExcelAppendRange DataTable="[resultsDT]" DisplayName="Append Range to results.xlsx" sap2010:WorkflowViewState.IdRef="ExcelAppendRange_18" SheetName="Sheet1" />
+                                    <ui:CreateDirectory ContinueOnError="{x:Null}" DisplayName="Create directory" sap2010:WorkflowViewState.IdRef="CreateDirectory_9" Path="[path + day + &quot;\&quot; + row(2).ToString]" />
+                                    <Sequence DisplayName="Save attachments" sap2010:WorkflowViewState.IdRef="Sequence_180">
+                                      <Sequence DisplayName="Save doc, susije doc" sap2010:WorkflowViewState.IdRef="Sequence_246">
+                                        <ui:OpenBrowser UiBrowser="{x:Null}" BrowserType="Chrome" DisplayName="Open https://e-seimas.lrs.lt/portal/legalAct/lt/TAP/6d27174410ba11e88a05839ea3846d8e" Hidden="False" sap2010:WorkflowViewState.IdRef="OpenBrowser_15" NewSession="True" Private="False" Url="[&quot;http://www.lrs.lt/pls/proj/&quot; + row(0).ToString]">
                                           <ui:OpenBrowser.Body>
                                             <ActivityAction x:TypeArguments="x:Object">
                                               <ActivityAction.Argument>
                                                 <DelegateInArgument x:TypeArguments="x:Object" Name="ContextTarget" />
                                               </ActivityAction.Argument>
-                                              <Sequence sap2010:WorkflowViewState.IdRef="Sequence_306">
-                                                <ui:BrowserScope Browser="{x:Null}" SearchScope="{x:Null}" TimeoutMS="{x:Null}" UiBrowser="{x:Null}" BrowserType="Chrome" DisplayName="Attach Browser 'S2 500D l Page'" sap2010:WorkflowViewState.IdRef="BrowserScope_41" InformativeScreenshot="07f76a4671676f2035cb30a3c562337b" Selector="&lt;html app='chrome.exe' title='*' /&gt;">
-                                                  <ui:BrowserScope.Body>
-                                                    <ActivityAction x:TypeArguments="x:Object">
-                                                      <ActivityAction.Argument>
-                                                        <DelegateInArgument x:TypeArguments="x:Object" Name="ContextTarget" />
-                                                      </ActivityAction.Argument>
-                                                      <Sequence sap2010:WorkflowViewState.IdRef="Sequence_308">
-                                                        <ui:TypeInto DelayBefore="{x:Null}" DelayBetweenKeys="{x:Null}" DelayMS="{x:Null}" Activate="True" ClickBeforeTyping="False" DisplayName="Type into 'editable text'" EmptyField="True" sap2010:WorkflowViewState.IdRef="TypeInto_66" SendWindowMessages="False" SimulateType="False" Text="[&quot;http://www.lrs.lt/pls/proj/&quot; + row(0).ToString + &quot;[k(enter)]&quot;]">
-                                                          <ui:TypeInto.Target>
-                                                            <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="64ac7d7880aedf333acacedc2b00b2d2" Selector="&lt;ctrl name='Google Chrome' role='client' /&gt;&lt;ctrl name='main' role='tool bar' /&gt;&lt;ctrl name='Address and search bar' role='editable text' /&gt;" WaitForReady="INTERACTIVE" />
-                                                          </ui:TypeInto.Target>
-                                                        </ui:TypeInto>
-                                                        <Sequence DisplayName="Save prideti doc" sap2010:WorkflowViewState.IdRef="Sequence_305">
-                                                          <ui:WaitUiElementAppear FoundElement="{x:Null}" DisplayName="Find Element 'H3'" sap2010:WorkflowViewState.IdRef="WaitUiElementAppear_27" WaitActive="False" WaitVisible="False">
-                                                            <ui:WaitUiElementAppear.Target>
-                                                              <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="7d513da9035cc09e11984132dc2c66dc" Selector="&lt;webctrl tabindex='0' tag='H3' /&gt;" WaitForReady="INTERACTIVE" />
-                                                            </ui:WaitUiElementAppear.Target>
-                                                          </ui:WaitUiElementAppear>
-                                                          <ui:Click DelayBefore="{x:Null}" DelayMS="{x:Null}" ClickType="CLICK_SINGLE" DisplayName="Click 'H3'" sap2010:WorkflowViewState.IdRef="Click_150" KeyModifiers="None" MouseButton="BTN_LEFT" SendWindowMessages="False" SimulateClick="False">
+                                              <Sequence sap2010:WorkflowViewState.IdRef="Sequence_282">
+                                                <Sequence DisplayName="Save doc" sap2010:WorkflowViewState.IdRef="Sequence_269">
+                                                  <ui:Click DelayBefore="{x:Null}" DelayMS="{x:Null}" ClickType="CLICK_SINGLE" DisplayName="Click 'A '" sap2010:WorkflowViewState.IdRef="Click_137" KeyModifiers="None" MouseButton="BTN_LEFT" SendWindowMessages="False" SimulateClick="True">
+                                                    <ui:Click.CursorPosition>
+                                                      <ui:CursorPosition OffsetX="8" OffsetY="12" Position="TopLeft" />
+                                                    </ui:Click.CursorPosition>
+                                                    <ui:Click.Target>
+                                                      <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="a1d5e21620d9841f6864cc8605d4d2fa" Selector="&lt;webctrl href='/rs/legalact/TAP/*/format/MSO2010*' parentid='mainForm:j_id_bk' tag='A' /&gt;" WaitForReady="COMPLETE" />
+                                                    </ui:Click.Target>
+                                                  </ui:Click>
+                                                  <ui:WindowScope ApplicationWindow="{x:Null}" SearchScope="{x:Null}" TimeoutMS="{x:Null}" Window="{x:Null}" DisplayName="Save file to folder" sap2010:WorkflowViewState.IdRef="WindowScope_57" InformativeScreenshot="79dfab1251f99b6bebc5a5251adf3e9c" Selector="&lt;wnd app='chrome.exe' cls='#32770' title='Save As' /&gt;">
+                                                    <ui:WindowScope.Body>
+                                                      <ActivityAction x:TypeArguments="x:Object">
+                                                        <ActivityAction.Argument>
+                                                          <DelegateInArgument x:TypeArguments="x:Object" Name="ContextTarget" />
+                                                        </ActivityAction.Argument>
+                                                        <Sequence DisplayName="Do" sap2010:WorkflowViewState.IdRef="Sequence_268">
+                                                          <ui:Click DelayBefore="{x:Null}" DelayMS="{x:Null}" ClickType="CLICK_SINGLE" DisplayName="Click 'push button'" sap2010:WorkflowViewState.IdRef="Click_138" KeyModifiers="None" MouseButton="BTN_LEFT" SendWindowMessages="False" SimulateClick="False">
                                                             <ui:Click.CursorPosition>
                                                               <ui:CursorPosition Position="Center">
                                                                 <ui:CursorPosition.OffsetX>
@@ -460,64 +205,143 @@
                                                               </ui:CursorPosition>
                                                             </ui:Click.CursorPosition>
                                                             <ui:Click.Target>
-                                                              <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="6ac8abed452fe825e3ee365b93ba6f46" Selector="&lt;html app='chrome.exe' title='Dėl Lietuvos Respublikos Vyriausybės 1998 m. birželio 5 d. nutar*' /&gt;&lt;webctrl tabindex='0' tag='H3' /&gt;" WaitForReady="INTERACTIVE" />
+                                                              <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="d38ec690bf92a51d55d14cf2ee247a18" Selector="&lt;wnd cls='ToolbarWindow32' title='Address band toolbar' /&gt;&lt;ctrl name='Address band toolbar' role='tool bar' /&gt;&lt;ctrl name='Previous Locations' role='push button' /&gt;" WaitForReady="INTERACTIVE" />
                                                             </ui:Click.Target>
                                                           </ui:Click>
-                                                          <Sequence DisplayName="Data scraping" sap2010:WorkflowViewState.IdRef="Sequence_304">
-                                                            <Sequence.Variables>
-                                                              <Variable x:TypeArguments="sd:DataTable" Default="[New System.Data.DataTable]" Name="pridetiUrlDT" />
-                                                            </Sequence.Variables>
-                                                            <ui:BrowserScope Browser="{x:Null}" SearchScope="{x:Null}" TimeoutMS="{x:Null}" UiBrowser="{x:Null}" BrowserType="Chrome" DisplayName="Attach Browser 'D lLietuv Page'" sap2010:WorkflowViewState.IdRef="BrowserScope_40" InformativeScreenshot="dad14f9d85eb311e4d54db92143e9095" Selector="&lt;html app='chrome.exe' title='Dėl Lietuvos Respublikos Vyriausybės 1998 m. birželio 5 d. nutar*' /&gt;">
+                                                          <Assign sap2010:WorkflowViewState.IdRef="Assign_2">
+                                                            <Assign.To>
+                                                              <OutArgument x:TypeArguments="x:String">[nr]</OutArgument>
+                                                            </Assign.To>
+                                                            <Assign.Value>
+                                                              <InArgument x:TypeArguments="x:String">[row(2).ToString]</InArgument>
+                                                            </Assign.Value>
+                                                          </Assign>
+                                                          <ui:TypeInto DelayBefore="{x:Null}" DelayBetweenKeys="{x:Null}" DelayMS="{x:Null}" Activate="True" ClickBeforeTyping="False" DisplayName="Type into 'ToolbarWindow32'" EmptyField="True" sap2010:WorkflowViewState.IdRef="TypeInto_56" SendWindowMessages="False" SimulateType="False" Text="[path + day + &quot;\&quot;+nr + &quot;[k(enter)]&quot;]">
+                                                            <ui:TypeInto.Target>
+                                                              <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="e3dcfe72b3e930939aa6aa10e81b981d" Selector="&lt;wnd ctrlid='1001' title='Address: *' /&gt;" WaitForReady="INTERACTIVE" />
+                                                            </ui:TypeInto.Target>
+                                                          </ui:TypeInto>
+                                                          <ui:Click DelayBefore="{x:Null}" DelayMS="{x:Null}" ClickType="CLICK_SINGLE" DisplayName="Click 'Button'" sap2010:WorkflowViewState.IdRef="Click_139" KeyModifiers="None" MouseButton="BTN_LEFT" SendWindowMessages="False" SimulateClick="False">
+                                                            <ui:Click.CursorPosition>
+                                                              <ui:CursorPosition OffsetX="57" OffsetY="11" Position="TopLeft" />
+                                                            </ui:Click.CursorPosition>
+                                                            <ui:Click.Target>
+                                                              <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="1400303c396c97e4e14fd10b66ba1f68" Selector="&lt;wnd ctrlid='1' title='&amp;amp;Save' /&gt;" WaitForReady="INTERACTIVE" />
+                                                            </ui:Click.Target>
+                                                          </ui:Click>
+                                                        </Sequence>
+                                                      </ActivityAction>
+                                                    </ui:WindowScope.Body>
+                                                  </ui:WindowScope>
+                                                </Sequence>
+                                                <ui:BrowserScope Browser="{x:Null}" SearchScope="{x:Null}" TimeoutMS="{x:Null}" UiBrowser="{x:Null}" BrowserType="Chrome" DisplayName="Attach Browser 'S2 500D l Page'" sap2010:WorkflowViewState.IdRef="BrowserScope_38" InformativeScreenshot="07f76a4671676f2035cb30a3c562337b" Selector="&lt;html app='chrome.exe' title='*' /&gt;">
+                                                  <ui:BrowserScope.Body>
+                                                    <ActivityAction x:TypeArguments="x:Object">
+                                                      <ActivityAction.Argument>
+                                                        <DelegateInArgument x:TypeArguments="x:Object" Name="ContextTarget" />
+                                                      </ActivityAction.Argument>
+                                                      <Sequence sap2010:WorkflowViewState.IdRef="Sequence_281">
+                                                        <ui:TypeInto DelayBefore="{x:Null}" DelayBetweenKeys="{x:Null}" DelayMS="{x:Null}" Activate="True" ClickBeforeTyping="False" DisplayName="Type into 'editable text'" EmptyField="True" sap2010:WorkflowViewState.IdRef="TypeInto_61" SendWindowMessages="False" SimulateType="False" Text="[&quot;http://www.lrs.lt/pls/proj/&quot; + row(0).ToString + &quot;[k(enter)]&quot;]">
+                                                          <ui:TypeInto.Target>
+                                                            <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="64ac7d7880aedf333acacedc2b00b2d2" Selector="&lt;ctrl name='Google Chrome' role='client' /&gt;&lt;ctrl name='main' role='tool bar' /&gt;&lt;ctrl name='Address and search bar' role='editable text' /&gt;" WaitForReady="INTERACTIVE" />
+                                                          </ui:TypeInto.Target>
+                                                        </ui:TypeInto>
+                                                        <Sequence DisplayName="Save susije doc" sap2010:WorkflowViewState.IdRef="Sequence_279">
+                                                          <Sequence.Variables>
+                                                            <Variable x:TypeArguments="ui:UiElement" Name="H" />
+                                                          </Sequence.Variables>
+                                                          <Sequence DisplayName="Do" sap2010:WorkflowViewState.IdRef="Sequence_270">
+                                                            <ui:WaitUiElementAppear DisplayName="Find Element 'H3'" FoundElement="[H]" sap2010:WorkflowViewState.IdRef="WaitUiElementAppear_23" WaitActive="False" WaitVisible="False">
+                                                              <ui:WaitUiElementAppear.Target>
+                                                                <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="c5c6e3686d861aea41affdabe2d3c745" Selector="&lt;webctrl tag='H3' /&gt;" WaitForReady="COMPLETE" />
+                                                              </ui:WaitUiElementAppear.Target>
+                                                            </ui:WaitUiElementAppear>
+                                                            <ui:Click DelayBefore="{x:Null}" DelayMS="{x:Null}" ClickType="CLICK_SINGLE" DisplayName="Click 'H3'" sap2010:WorkflowViewState.IdRef="Click_140" KeyModifiers="None" MouseButton="BTN_LEFT" SendWindowMessages="False" SimulateClick="True">
+                                                              <ui:Click.CursorPosition>
+                                                                <ui:CursorPosition OffsetX="132" OffsetY="21" Position="TopLeft" />
+                                                              </ui:Click.CursorPosition>
+                                                              <ui:Click.Target>
+                                                                <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="c5c6e3686d861aea41affdabe2d3c745" Selector="&lt;webctrl tag='H3' /&gt;" WaitForReady="COMPLETE" />
+                                                              </ui:Click.Target>
+                                                            </ui:Click>
+                                                          </Sequence>
+                                                          <ui:CommentOut DisplayName="Comment out" sap2010:WorkflowViewState.IdRef="CommentOut_14">
+                                                            <ui:CommentOut.Body>
+                                                              <Sequence DisplayName="Ignored Activities" sap2010:WorkflowViewState.IdRef="Sequence_271">
+                                                                <ui:WaitUiElementAppear DisplayName="Find Element 'H3'" FoundElement="[H]" sap2010:WorkflowViewState.IdRef="WaitUiElementAppear_24" WaitActive="False" WaitVisible="False">
+                                                                  <ui:WaitUiElementAppear.Target>
+                                                                    <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="df0af87e02173cf8211e8d89442ac741" Selector="&lt;webctrl tabindex='-1' tag='H3' /&gt;" WaitForReady="COMPLETE" />
+                                                                  </ui:WaitUiElementAppear.Target>
+                                                                </ui:WaitUiElementAppear>
+                                                                <ui:Click DelayBefore="{x:Null}" DelayMS="{x:Null}" ClickType="CLICK_SINGLE" sap2010:WorkflowViewState.IdRef="Click_141" KeyModifiers="None" MouseButton="BTN_LEFT" SendWindowMessages="False" SimulateClick="False">
+                                                                  <ui:Click.CursorPosition>
+                                                                    <ui:CursorPosition Position="Center">
+                                                                      <ui:CursorPosition.OffsetX>
+                                                                        <InArgument x:TypeArguments="x:Int32" />
+                                                                      </ui:CursorPosition.OffsetX>
+                                                                      <ui:CursorPosition.OffsetY>
+                                                                        <InArgument x:TypeArguments="x:Int32" />
+                                                                      </ui:CursorPosition.OffsetY>
+                                                                    </ui:CursorPosition>
+                                                                  </ui:Click.CursorPosition>
+                                                                  <ui:Click.Target>
+                                                                    <ui:Target ClippingRegion="{x:Null}" Selector="{x:Null}" TimeoutMS="{x:Null}" Element="[H]" WaitForReady="INTERACTIVE" />
+                                                                  </ui:Click.Target>
+                                                                </ui:Click>
+                                                              </Sequence>
+                                                            </ui:CommentOut.Body>
+                                                          </ui:CommentOut>
+                                                          <Sequence DisplayName="Data scraping" sap2010:WorkflowViewState.IdRef="Sequence_278">
+                                                            <ui:BrowserScope Browser="{x:Null}" SearchScope="{x:Null}" TimeoutMS="{x:Null}" UiBrowser="{x:Null}" BrowserType="Chrome" DisplayName="Attach Browser 'D lradijo Page'" sap2010:WorkflowViewState.IdRef="BrowserScope_37" InformativeScreenshot="c8b3e29855c95a891a81dea8e1e9b9ee" Selector="&lt;html app='chrome.exe' title='*' /&gt;">
                                                               <ui:BrowserScope.Body>
                                                                 <ActivityAction x:TypeArguments="x:Object">
                                                                   <ActivityAction.Argument>
                                                                     <DelegateInArgument x:TypeArguments="x:Object" Name="ContextTarget" />
                                                                   </ActivityAction.Argument>
-                                                                  <Sequence DisplayName="Do" sap2010:WorkflowViewState.IdRef="Sequence_299">
-                                                                    <ui:ExtractData NextLinkSelector="{x:Null}" ContinueOnError="True" DataTable="[pridetiUrlDT]" DelayBetweenPagesMS="300" DisplayName="Extract Structured Data 'OL  mainForm:accordionR...'" ExtractMetadata="&lt;extract&gt;&lt;column exact='1' name='URL' attr='href'&gt;&lt;webctrl tag='li' class='ui-datalist-item'/&gt;&lt;webctrl tag='a' idx='1'/&gt;&lt;webctrl tag='img' idx='1'/&gt;&lt;/column&gt;&lt;/extract&gt;" sap2010:WorkflowViewState.IdRef="ExtractData_25" MaxNumberOfResults="100">
-                                                                      <ui:ExtractData.Target>
-                                                                        <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="cdddd0809781a3efc41a9de3c9a3bc60" Selector="&lt;webctrl tag='OL' /&gt;" WaitForReady="COMPLETE" />
-                                                                      </ui:ExtractData.Target>
-                                                                    </ui:ExtractData>
+                                                                  <Sequence sap2010:WorkflowViewState.IdRef="Sequence_273">
+                                                                    <Sequence DisplayName="Do" sap2010:WorkflowViewState.IdRef="Sequence_272">
+                                                                      <ui:ExtractData NextLinkSelector="{x:Null}" ContinueOnError="True" DataTable="[susijeUrlDT]" DelayBetweenPagesMS="300" DisplayName="Extract Structured Data 'DIV  mainForm:accordion...'" ExtractMetadata="&lt;extract&gt;&lt;column exact='1' name='URL' attr='href'&gt;&lt;webctrl tag='div' class='ui-datalist ui-widget'/&gt;&lt;webctrl tag='div' class='ui-datalist-content ui-widget-content' idx='1'/&gt;&lt;webctrl tag='div'/&gt;&lt;webctrl tag='a' class='actualEditionLink' idx='1'/&gt;&lt;/column&gt;&lt;/extract&gt;" sap2010:WorkflowViewState.IdRef="ExtractData_23" MaxNumberOfResults="100">
+                                                                        <ui:ExtractData.Target>
+                                                                          <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="4c3623a887d95bffb5f2db82309ec317" Selector="&lt;webctrl id='mainForm:accordionRight:tabRelatedDocuments' tag='DIV' /&gt;" WaitForReady="COMPLETE" />
+                                                                        </ui:ExtractData.Target>
+                                                                      </ui:ExtractData>
+                                                                    </Sequence>
                                                                   </Sequence>
                                                                 </ActivityAction>
                                                               </ui:BrowserScope.Body>
                                                             </ui:BrowserScope>
-                                                            <ui:ExcelApplicationScope Password="{x:Null}" DisplayName="Excel application scope" sap2010:WorkflowViewState.IdRef="ExcelApplicationScope_32" WorkbookPath="pridetiDT.xlsx">
+                                                            <ui:ExcelApplicationScope Password="{x:Null}" DisplayName="Excel application scope" sap2010:WorkflowViewState.IdRef="ExcelApplicationScope_30" WorkbookPath="susijeDT.xlsx">
                                                               <ui:ExcelApplicationScope.Body>
                                                                 <ActivityAction x:TypeArguments="ui:WorkbookApplication">
                                                                   <ActivityAction.Argument>
                                                                     <DelegateInArgument x:TypeArguments="ui:WorkbookApplication" Name="ExcelWorkbookScope" />
                                                                   </ActivityAction.Argument>
-                                                                  <Sequence DisplayName="Do" sap2010:WorkflowViewState.IdRef="Sequence_300">
-                                                                    <ui:ExcelAppendRange DataTable="[pridetiUrlDT]" DisplayName="Append Range" sap2010:WorkflowViewState.IdRef="ExcelAppendRange_29" SheetName="Sheet1" />
+                                                                  <Sequence DisplayName="Do" sap2010:WorkflowViewState.IdRef="Sequence_274">
+                                                                    <ui:ExcelAppendRange DataTable="[susijeUrlDT]" DisplayName="Append Range" sap2010:WorkflowViewState.IdRef="ExcelAppendRange_27" SheetName="Sheet1" />
                                                                   </Sequence>
                                                                 </ActivityAction>
                                                               </ui:ExcelApplicationScope.Body>
                                                             </ui:ExcelApplicationScope>
-                                                            <ui:ForEachRow DataTable="[pridetiUrlDT]" DisplayName="For each row" sap2010:WorkflowViewState.IdRef="ForEachRow_23">
+                                                            <ui:ForEachRow DataTable="[susijeUrlDT]" DisplayName="For each row" sap2010:WorkflowViewState.IdRef="ForEachRow_21">
                                                               <ui:ForEachRow.Body>
                                                                 <ActivityAction x:TypeArguments="sd:DataRow">
                                                                   <ActivityAction.Argument>
-                                                                    <DelegateInArgument x:TypeArguments="sd:DataRow" Name="pridetiUrl" />
+                                                                    <DelegateInArgument x:TypeArguments="sd:DataRow" Name="url" />
                                                                   </ActivityAction.Argument>
-                                                                  <Sequence DisplayName="Body" sap2010:WorkflowViewState.IdRef="Sequence_303">
-                                                                    <ui:WindowScope ApplicationWindow="{x:Null}" SearchScope="{x:Null}" TimeoutMS="{x:Null}" Window="{x:Null}" DisplayName="Attach Window 'D lradijo Page'" sap2010:WorkflowViewState.IdRef="WindowScope_65" InformativeScreenshot="2c32caaa15a2f77b36cd6a4202f6077b" Selector="&lt;html app='chrome.exe' title='*' /&gt;">
+                                                                  <Sequence DisplayName="Body" sap2010:WorkflowViewState.IdRef="Sequence_277">
+                                                                    <ui:WindowScope ApplicationWindow="{x:Null}" SearchScope="{x:Null}" TimeoutMS="{x:Null}" Window="{x:Null}" DisplayName="Attach Window 'D lradijo Page'" sap2010:WorkflowViewState.IdRef="WindowScope_58" InformativeScreenshot="2c32caaa15a2f77b36cd6a4202f6077b" Selector="&lt;html app='chrome.exe' title='*' /&gt;">
                                                                       <ui:WindowScope.Body>
                                                                         <ActivityAction x:TypeArguments="x:Object">
                                                                           <ActivityAction.Argument>
                                                                             <DelegateInArgument x:TypeArguments="x:Object" Name="ContextTarget" />
                                                                           </ActivityAction.Argument>
-                                                                          <Sequence DisplayName="Do" sap2010:WorkflowViewState.IdRef="Sequence_301">
-                                                                            <Sequence.Variables>
-                                                                              <Variable x:TypeArguments="x:String" Default="https://e-seimas.lrs.lt" Name="path" />
-                                                                            </Sequence.Variables>
-                                                                            <ui:TypeInto DelayBefore="{x:Null}" DelayBetweenKeys="{x:Null}" DelayMS="{x:Null}" Activate="True" ClickBeforeTyping="False" DisplayName="Type into 'editable text'" EmptyField="True" sap2010:WorkflowViewState.IdRef="TypeInto_64" SendWindowMessages="False" SimulateType="False" Text="[seimasPath + pridetiUrl(0).ToString + &quot;[k(enter)]&quot;]">
+                                                                          <Sequence DisplayName="Do" sap2010:WorkflowViewState.IdRef="Sequence_275">
+                                                                            <ui:TypeInto DelayBefore="{x:Null}" DelayBetweenKeys="{x:Null}" DelayMS="{x:Null}" Activate="True" ClickBeforeTyping="False" DisplayName="Type into 'editable text'" EmptyField="True" sap2010:WorkflowViewState.IdRef="TypeInto_57" SendWindowMessages="False" SimulateType="False" Text="[seimasPath + url(0).ToString + &quot;[k(enter)]&quot;]">
                                                                               <ui:TypeInto.Target>
                                                                                 <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="08638ade500afcffe8a373d266206026" Selector="&lt;ctrl name='Google Chrome' role='client' /&gt;&lt;ctrl name='main' role='tool bar' /&gt;&lt;ctrl name='Address and search bar' role='editable text' /&gt;" WaitForReady="INTERACTIVE" />
                                                                               </ui:TypeInto.Target>
                                                                             </ui:TypeInto>
-                                                                            <ui:Click DelayBefore="{x:Null}" DelayMS="{x:Null}" ClickType="CLICK_SINGLE" DisplayName="Click 'IMG  mainForm:j_id_c5'" sap2010:WorkflowViewState.IdRef="Click_151" KeyModifiers="None" MouseButton="BTN_LEFT" SendWindowMessages="False" SimulateClick="False">
+                                                                            <ui:Click DelayBefore="{x:Null}" DelayMS="{x:Null}" ClickType="CLICK_SINGLE" DisplayName="Click 'IMG  mainForm:j_id_c5'" sap2010:WorkflowViewState.IdRef="Click_142" KeyModifiers="None" MouseButton="BTN_LEFT" SendWindowMessages="False" SimulateClick="False">
                                                                               <ui:Click.CursorPosition>
                                                                                 <ui:CursorPosition Position="Center">
                                                                                   <ui:CursorPosition.OffsetX>
@@ -536,14 +360,14 @@
                                                                         </ActivityAction>
                                                                       </ui:WindowScope.Body>
                                                                     </ui:WindowScope>
-                                                                    <ui:WindowScope ApplicationWindow="{x:Null}" SearchScope="{x:Null}" TimeoutMS="{x:Null}" Window="{x:Null}" DisplayName="Attach Window 'SaveAs Dialog'" sap2010:WorkflowViewState.IdRef="WindowScope_66" InformativeScreenshot="79dfab1251f99b6bebc5a5251adf3e9c" Selector="&lt;wnd app='chrome.exe' cls='#32770' title='Save As' /&gt;">
+                                                                    <ui:WindowScope ApplicationWindow="{x:Null}" SearchScope="{x:Null}" TimeoutMS="{x:Null}" Window="{x:Null}" DisplayName="Attach Window 'SaveAs Dialog'" sap2010:WorkflowViewState.IdRef="WindowScope_59" InformativeScreenshot="79dfab1251f99b6bebc5a5251adf3e9c" Selector="&lt;wnd app='chrome.exe' cls='#32770' title='Save As' /&gt;">
                                                                       <ui:WindowScope.Body>
                                                                         <ActivityAction x:TypeArguments="x:Object">
                                                                           <ActivityAction.Argument>
                                                                             <DelegateInArgument x:TypeArguments="x:Object" Name="ContextTarget" />
                                                                           </ActivityAction.Argument>
-                                                                          <Sequence DisplayName="Do" sap2010:WorkflowViewState.IdRef="Sequence_302">
-                                                                            <ui:Click DelayBefore="{x:Null}" DelayMS="{x:Null}" ClickType="CLICK_SINGLE" DisplayName="Click 'push button'" sap2010:WorkflowViewState.IdRef="Click_152" KeyModifiers="None" MouseButton="BTN_LEFT" SendWindowMessages="False" SimulateClick="False">
+                                                                          <Sequence DisplayName="Do" sap2010:WorkflowViewState.IdRef="Sequence_276">
+                                                                            <ui:Click DelayBefore="{x:Null}" DelayMS="{x:Null}" ClickType="CLICK_SINGLE" DisplayName="Click 'push button'" sap2010:WorkflowViewState.IdRef="Click_143" KeyModifiers="None" MouseButton="BTN_LEFT" SendWindowMessages="False" SimulateClick="False">
                                                                               <ui:Click.CursorPosition>
                                                                                 <ui:CursorPosition Position="Center">
                                                                                   <ui:CursorPosition.OffsetX>
@@ -558,12 +382,12 @@
                                                                                 <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="d38ec690bf92a51d55d14cf2ee247a18" Selector="&lt;wnd cls='ToolbarWindow32' title='Address band toolbar' /&gt;&lt;ctrl name='Address band toolbar' role='tool bar' /&gt;&lt;ctrl name='Previous Locations' role='push button' /&gt;" WaitForReady="INTERACTIVE" />
                                                                               </ui:Click.Target>
                                                                             </ui:Click>
-                                                                            <ui:TypeInto DelayBefore="{x:Null}" DelayBetweenKeys="{x:Null}" DelayMS="{x:Null}" Activate="True" ClickBeforeTyping="False" DisplayName="Type into 'ToolbarWindow32'" EmptyField="True" sap2010:WorkflowViewState.IdRef="TypeInto_65" SendWindowMessages="False" SimulateType="False" Text="[path + day + &quot;\&quot; + nr + &quot;[k(enter)]&quot;]">
+                                                                            <ui:TypeInto DelayBefore="{x:Null}" DelayBetweenKeys="{x:Null}" DelayMS="{x:Null}" Activate="True" ClickBeforeTyping="False" DisplayName="Type into 'ToolbarWindow32'" EmptyField="True" sap2010:WorkflowViewState.IdRef="TypeInto_58" SendWindowMessages="False" SimulateType="False" Text="[path +day + &quot;\&quot; + nr + &quot;[k(enter)]&quot;]">
                                                                               <ui:TypeInto.Target>
                                                                                 <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="e3dcfe72b3e930939aa6aa10e81b981d" Selector="&lt;wnd ctrlid='1001' title='Address: *' /&gt;" WaitForReady="INTERACTIVE" />
                                                                               </ui:TypeInto.Target>
                                                                             </ui:TypeInto>
-                                                                            <ui:Click DelayBefore="{x:Null}" DelayMS="{x:Null}" ClickType="CLICK_SINGLE" DisplayName="Click 'Button'" sap2010:WorkflowViewState.IdRef="Click_153" KeyModifiers="None" MouseButton="BTN_LEFT" SendWindowMessages="False" SimulateClick="False">
+                                                                            <ui:Click DelayBefore="{x:Null}" DelayMS="{x:Null}" ClickType="CLICK_SINGLE" DisplayName="Click 'Button'" sap2010:WorkflowViewState.IdRef="Click_144" KeyModifiers="None" MouseButton="BTN_LEFT" SendWindowMessages="False" SimulateClick="False">
                                                                               <ui:Click.CursorPosition>
                                                                                 <ui:CursorPosition OffsetX="57" OffsetY="11" Position="TopLeft" />
                                                                               </ui:Click.CursorPosition>
@@ -581,89 +405,384 @@
                                                             </ui:ForEachRow>
                                                           </Sequence>
                                                         </Sequence>
+                                                        <ui:CommentOut DisplayName="Comment out" sap2010:WorkflowViewState.IdRef="CommentOut_15">
+                                                          <ui:CommentOut.Body>
+                                                            <Sequence DisplayName="Ignored Activities" sap2010:WorkflowViewState.IdRef="Sequence_280">
+                                                              <TryCatch DisplayName="Try catch" sap2010:WorkflowViewState.IdRef="TryCatch_2">
+                                                                <TryCatch.Catches>
+                                                                  <Catch x:TypeArguments="s:Exception" sap2010:WorkflowViewState.IdRef="Catch`1_3">
+                                                                    <ActivityAction x:TypeArguments="s:Exception">
+                                                                      <ActivityAction.Argument>
+                                                                        <DelegateInArgument x:TypeArguments="s:Exception" Name="exception" />
+                                                                      </ActivityAction.Argument>
+                                                                    </ActivityAction>
+                                                                  </Catch>
+                                                                </TryCatch.Catches>
+                                                              </TryCatch>
+                                                            </Sequence>
+                                                          </ui:CommentOut.Body>
+                                                        </ui:CommentOut>
                                                       </Sequence>
                                                     </ActivityAction>
                                                   </ui:BrowserScope.Body>
                                                 </ui:BrowserScope>
+                                                <ui:CommentOut DisplayName="Comment out" sap2010:WorkflowViewState.IdRef="CommentOut_16">
+                                                  <ui:CommentOut.Body>
+                                                    <Sequence DisplayName="Ignored Activities" sap2010:WorkflowViewState.IdRef="Sequence_285" />
+                                                  </ui:CommentOut.Body>
+                                                </ui:CommentOut>
                                               </Sequence>
                                             </ActivityAction>
                                           </ui:OpenBrowser.Body>
                                         </ui:OpenBrowser>
                                       </Sequence>
-                                    </TryCatch.Try>
-                                    <TryCatch.Catches>
-                                      <Catch x:TypeArguments="s:Exception" sap2010:WorkflowViewState.IdRef="Catch`1_4">
-                                        <ActivityAction x:TypeArguments="s:Exception">
-                                          <ActivityAction.Argument>
-                                            <DelegateInArgument x:TypeArguments="s:Exception" Name="exception" />
-                                          </ActivityAction.Argument>
-                                        </ActivityAction>
-                                      </Catch>
-                                    </TryCatch.Catches>
-                                  </TryCatch>
-                                  <ui:CommentOut DisplayName="Comment out" sap2010:WorkflowViewState.IdRef="CommentOut_11">
-                                    <ui:CommentOut.Body>
-                                      <Sequence DisplayName="Ignored Activities" sap2010:WorkflowViewState.IdRef="Sequence_258" />
-                                    </ui:CommentOut.Body>
-                                  </ui:CommentOut>
-                                </Sequence>
+                                      <TryCatch DisplayName="Try catch" sap2010:WorkflowViewState.IdRef="TryCatch_3">
+                                        <TryCatch.Try>
+                                          <Sequence DisplayName="Save prideti doc" sap2010:WorkflowViewState.IdRef="Sequence_307">
+                                            <ui:OpenBrowser UiBrowser="{x:Null}" BrowserType="Chrome" DisplayName="Open https://e-seimas.lrs.lt/portal/legalAct/lt/TAP/6d27174410ba11e88a05839ea3846d8e" Hidden="False" sap2010:WorkflowViewState.IdRef="OpenBrowser_16" NewSession="True" Private="False" Url="[&quot;http://www.lrs.lt/pls/proj/&quot; + row(0).ToString]">
+                                              <ui:OpenBrowser.Body>
+                                                <ActivityAction x:TypeArguments="x:Object">
+                                                  <ActivityAction.Argument>
+                                                    <DelegateInArgument x:TypeArguments="x:Object" Name="ContextTarget" />
+                                                  </ActivityAction.Argument>
+                                                  <Sequence sap2010:WorkflowViewState.IdRef="Sequence_306">
+                                                    <ui:BrowserScope Browser="{x:Null}" SearchScope="{x:Null}" TimeoutMS="{x:Null}" UiBrowser="{x:Null}" BrowserType="Chrome" DisplayName="Attach Browser 'S2 500D l Page'" sap2010:WorkflowViewState.IdRef="BrowserScope_41" InformativeScreenshot="07f76a4671676f2035cb30a3c562337b" Selector="&lt;html app='chrome.exe' title='*' /&gt;">
+                                                      <ui:BrowserScope.Body>
+                                                        <ActivityAction x:TypeArguments="x:Object">
+                                                          <ActivityAction.Argument>
+                                                            <DelegateInArgument x:TypeArguments="x:Object" Name="ContextTarget" />
+                                                          </ActivityAction.Argument>
+                                                          <Sequence sap2010:WorkflowViewState.IdRef="Sequence_308">
+                                                            <ui:TypeInto DelayBefore="{x:Null}" DelayBetweenKeys="{x:Null}" DelayMS="{x:Null}" Activate="True" ClickBeforeTyping="False" DisplayName="Type into 'editable text'" EmptyField="True" sap2010:WorkflowViewState.IdRef="TypeInto_66" SendWindowMessages="False" SimulateType="False" Text="[&quot;http://www.lrs.lt/pls/proj/&quot; + row(0).ToString + &quot;[k(enter)]&quot;]">
+                                                              <ui:TypeInto.Target>
+                                                                <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="64ac7d7880aedf333acacedc2b00b2d2" Selector="&lt;ctrl name='Google Chrome' role='client' /&gt;&lt;ctrl name='main' role='tool bar' /&gt;&lt;ctrl name='Address and search bar' role='editable text' /&gt;" WaitForReady="INTERACTIVE" />
+                                                              </ui:TypeInto.Target>
+                                                            </ui:TypeInto>
+                                                            <Sequence DisplayName="Save prideti doc" sap2010:WorkflowViewState.IdRef="Sequence_305">
+                                                              <ui:WaitUiElementAppear FoundElement="{x:Null}" DisplayName="Find Element 'H3'" sap2010:WorkflowViewState.IdRef="WaitUiElementAppear_27" WaitActive="False" WaitVisible="False">
+                                                                <ui:WaitUiElementAppear.Target>
+                                                                  <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="7d513da9035cc09e11984132dc2c66dc" Selector="&lt;webctrl tabindex='0' tag='H3' /&gt;" WaitForReady="INTERACTIVE" />
+                                                                </ui:WaitUiElementAppear.Target>
+                                                              </ui:WaitUiElementAppear>
+                                                              <ui:Click DelayBefore="{x:Null}" DelayMS="{x:Null}" ClickType="CLICK_SINGLE" DisplayName="Click 'H3'" sap2010:WorkflowViewState.IdRef="Click_150" KeyModifiers="None" MouseButton="BTN_LEFT" SendWindowMessages="False" SimulateClick="False">
+                                                                <ui:Click.CursorPosition>
+                                                                  <ui:CursorPosition Position="Center">
+                                                                    <ui:CursorPosition.OffsetX>
+                                                                      <InArgument x:TypeArguments="x:Int32" />
+                                                                    </ui:CursorPosition.OffsetX>
+                                                                    <ui:CursorPosition.OffsetY>
+                                                                      <InArgument x:TypeArguments="x:Int32" />
+                                                                    </ui:CursorPosition.OffsetY>
+                                                                  </ui:CursorPosition>
+                                                                </ui:Click.CursorPosition>
+                                                                <ui:Click.Target>
+                                                                  <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="6ac8abed452fe825e3ee365b93ba6f46" Selector="&lt;html app='chrome.exe' title='Dėl Lietuvos Respublikos Vyriausybės 1998 m. birželio 5 d. nutar*' /&gt;&lt;webctrl tabindex='0' tag='H3' /&gt;" WaitForReady="INTERACTIVE" />
+                                                                </ui:Click.Target>
+                                                              </ui:Click>
+                                                              <Sequence DisplayName="Data scraping" sap2010:WorkflowViewState.IdRef="Sequence_304">
+                                                                <Sequence.Variables>
+                                                                  <Variable x:TypeArguments="sd:DataTable" Default="[New System.Data.DataTable]" Name="pridetiUrlDT" />
+                                                                </Sequence.Variables>
+                                                                <ui:BrowserScope Browser="{x:Null}" SearchScope="{x:Null}" TimeoutMS="{x:Null}" UiBrowser="{x:Null}" BrowserType="Chrome" DisplayName="Attach Browser 'D lLietuv Page'" sap2010:WorkflowViewState.IdRef="BrowserScope_40" InformativeScreenshot="dad14f9d85eb311e4d54db92143e9095" Selector="&lt;html app='chrome.exe' title='Dėl Lietuvos Respublikos Vyriausybės 1998 m. birželio 5 d. nutar*' /&gt;">
+                                                                  <ui:BrowserScope.Body>
+                                                                    <ActivityAction x:TypeArguments="x:Object">
+                                                                      <ActivityAction.Argument>
+                                                                        <DelegateInArgument x:TypeArguments="x:Object" Name="ContextTarget" />
+                                                                      </ActivityAction.Argument>
+                                                                      <Sequence DisplayName="Do" sap2010:WorkflowViewState.IdRef="Sequence_299">
+                                                                        <ui:ExtractData NextLinkSelector="{x:Null}" ContinueOnError="True" DataTable="[pridetiUrlDT]" DelayBetweenPagesMS="300" DisplayName="Extract Structured Data 'OL  mainForm:accordionR...'" ExtractMetadata="&lt;extract&gt;&lt;column exact='1' name='URL' attr='href'&gt;&lt;webctrl tag='li' class='ui-datalist-item'/&gt;&lt;webctrl tag='a' idx='1'/&gt;&lt;webctrl tag='img' idx='1'/&gt;&lt;/column&gt;&lt;/extract&gt;" sap2010:WorkflowViewState.IdRef="ExtractData_25" MaxNumberOfResults="100">
+                                                                          <ui:ExtractData.Target>
+                                                                            <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="cdddd0809781a3efc41a9de3c9a3bc60" Selector="&lt;webctrl tag='OL' /&gt;" WaitForReady="COMPLETE" />
+                                                                          </ui:ExtractData.Target>
+                                                                        </ui:ExtractData>
+                                                                      </Sequence>
+                                                                    </ActivityAction>
+                                                                  </ui:BrowserScope.Body>
+                                                                </ui:BrowserScope>
+                                                                <ui:ExcelApplicationScope Password="{x:Null}" DisplayName="Excel application scope" sap2010:WorkflowViewState.IdRef="ExcelApplicationScope_32" WorkbookPath="pridetiDT.xlsx">
+                                                                  <ui:ExcelApplicationScope.Body>
+                                                                    <ActivityAction x:TypeArguments="ui:WorkbookApplication">
+                                                                      <ActivityAction.Argument>
+                                                                        <DelegateInArgument x:TypeArguments="ui:WorkbookApplication" Name="ExcelWorkbookScope" />
+                                                                      </ActivityAction.Argument>
+                                                                      <Sequence DisplayName="Do" sap2010:WorkflowViewState.IdRef="Sequence_300">
+                                                                        <ui:ExcelAppendRange DataTable="[pridetiUrlDT]" DisplayName="Append Range" sap2010:WorkflowViewState.IdRef="ExcelAppendRange_29" SheetName="Sheet1" />
+                                                                      </Sequence>
+                                                                    </ActivityAction>
+                                                                  </ui:ExcelApplicationScope.Body>
+                                                                </ui:ExcelApplicationScope>
+                                                                <ui:ForEachRow DataTable="[pridetiUrlDT]" DisplayName="For each row" sap2010:WorkflowViewState.IdRef="ForEachRow_23">
+                                                                  <ui:ForEachRow.Body>
+                                                                    <ActivityAction x:TypeArguments="sd:DataRow">
+                                                                      <ActivityAction.Argument>
+                                                                        <DelegateInArgument x:TypeArguments="sd:DataRow" Name="pridetiUrl" />
+                                                                      </ActivityAction.Argument>
+                                                                      <Sequence DisplayName="Body" sap2010:WorkflowViewState.IdRef="Sequence_303">
+                                                                        <ui:WindowScope ApplicationWindow="{x:Null}" SearchScope="{x:Null}" TimeoutMS="{x:Null}" Window="{x:Null}" DisplayName="Attach Window 'D lradijo Page'" sap2010:WorkflowViewState.IdRef="WindowScope_65" InformativeScreenshot="2c32caaa15a2f77b36cd6a4202f6077b" Selector="&lt;html app='chrome.exe' title='*' /&gt;">
+                                                                          <ui:WindowScope.Body>
+                                                                            <ActivityAction x:TypeArguments="x:Object">
+                                                                              <ActivityAction.Argument>
+                                                                                <DelegateInArgument x:TypeArguments="x:Object" Name="ContextTarget" />
+                                                                              </ActivityAction.Argument>
+                                                                              <Sequence DisplayName="Do" sap2010:WorkflowViewState.IdRef="Sequence_301">
+                                                                                <Sequence.Variables>
+                                                                                  <Variable x:TypeArguments="x:String" Default="https://e-seimas.lrs.lt" Name="path" />
+                                                                                </Sequence.Variables>
+                                                                                <ui:TypeInto DelayBefore="{x:Null}" DelayBetweenKeys="{x:Null}" DelayMS="{x:Null}" Activate="True" ClickBeforeTyping="False" DisplayName="Type into 'editable text'" EmptyField="True" sap2010:WorkflowViewState.IdRef="TypeInto_64" SendWindowMessages="False" SimulateType="False" Text="[seimasPath + pridetiUrl(0).ToString + &quot;[k(enter)]&quot;]">
+                                                                                  <ui:TypeInto.Target>
+                                                                                    <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="08638ade500afcffe8a373d266206026" Selector="&lt;ctrl name='Google Chrome' role='client' /&gt;&lt;ctrl name='main' role='tool bar' /&gt;&lt;ctrl name='Address and search bar' role='editable text' /&gt;" WaitForReady="INTERACTIVE" />
+                                                                                  </ui:TypeInto.Target>
+                                                                                </ui:TypeInto>
+                                                                                <ui:Click DelayBefore="{x:Null}" DelayMS="{x:Null}" ClickType="CLICK_SINGLE" DisplayName="Click 'IMG  mainForm:j_id_c5'" sap2010:WorkflowViewState.IdRef="Click_151" KeyModifiers="None" MouseButton="BTN_LEFT" SendWindowMessages="False" SimulateClick="False">
+                                                                                  <ui:Click.CursorPosition>
+                                                                                    <ui:CursorPosition Position="Center">
+                                                                                      <ui:CursorPosition.OffsetX>
+                                                                                        <InArgument x:TypeArguments="x:Int32" />
+                                                                                      </ui:CursorPosition.OffsetX>
+                                                                                      <ui:CursorPosition.OffsetY>
+                                                                                        <InArgument x:TypeArguments="x:Int32" />
+                                                                                      </ui:CursorPosition.OffsetY>
+                                                                                    </ui:CursorPosition>
+                                                                                  </ui:Click.CursorPosition>
+                                                                                  <ui:Click.Target>
+                                                                                    <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="96ce5020f981efdf276576887c88f8cb" Selector="&lt;webctrl id='mainForm:j_id_c5' tag='IMG' /&gt;" WaitForReady="INTERACTIVE" />
+                                                                                  </ui:Click.Target>
+                                                                                </ui:Click>
+                                                                              </Sequence>
+                                                                            </ActivityAction>
+                                                                          </ui:WindowScope.Body>
+                                                                        </ui:WindowScope>
+                                                                        <ui:WindowScope ApplicationWindow="{x:Null}" SearchScope="{x:Null}" TimeoutMS="{x:Null}" Window="{x:Null}" DisplayName="Attach Window 'SaveAs Dialog'" sap2010:WorkflowViewState.IdRef="WindowScope_66" InformativeScreenshot="79dfab1251f99b6bebc5a5251adf3e9c" Selector="&lt;wnd app='chrome.exe' cls='#32770' title='Save As' /&gt;">
+                                                                          <ui:WindowScope.Body>
+                                                                            <ActivityAction x:TypeArguments="x:Object">
+                                                                              <ActivityAction.Argument>
+                                                                                <DelegateInArgument x:TypeArguments="x:Object" Name="ContextTarget" />
+                                                                              </ActivityAction.Argument>
+                                                                              <Sequence DisplayName="Do" sap2010:WorkflowViewState.IdRef="Sequence_302">
+                                                                                <ui:Click DelayBefore="{x:Null}" DelayMS="{x:Null}" ClickType="CLICK_SINGLE" DisplayName="Click 'push button'" sap2010:WorkflowViewState.IdRef="Click_152" KeyModifiers="None" MouseButton="BTN_LEFT" SendWindowMessages="False" SimulateClick="False">
+                                                                                  <ui:Click.CursorPosition>
+                                                                                    <ui:CursorPosition Position="Center">
+                                                                                      <ui:CursorPosition.OffsetX>
+                                                                                        <InArgument x:TypeArguments="x:Int32" />
+                                                                                      </ui:CursorPosition.OffsetX>
+                                                                                      <ui:CursorPosition.OffsetY>
+                                                                                        <InArgument x:TypeArguments="x:Int32" />
+                                                                                      </ui:CursorPosition.OffsetY>
+                                                                                    </ui:CursorPosition>
+                                                                                  </ui:Click.CursorPosition>
+                                                                                  <ui:Click.Target>
+                                                                                    <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="d38ec690bf92a51d55d14cf2ee247a18" Selector="&lt;wnd cls='ToolbarWindow32' title='Address band toolbar' /&gt;&lt;ctrl name='Address band toolbar' role='tool bar' /&gt;&lt;ctrl name='Previous Locations' role='push button' /&gt;" WaitForReady="INTERACTIVE" />
+                                                                                  </ui:Click.Target>
+                                                                                </ui:Click>
+                                                                                <ui:TypeInto DelayBefore="{x:Null}" DelayBetweenKeys="{x:Null}" DelayMS="{x:Null}" Activate="True" ClickBeforeTyping="False" DisplayName="Type into 'ToolbarWindow32'" EmptyField="True" sap2010:WorkflowViewState.IdRef="TypeInto_65" SendWindowMessages="False" SimulateType="False" Text="[path + day + &quot;\&quot; + nr + &quot;[k(enter)]&quot;]">
+                                                                                  <ui:TypeInto.Target>
+                                                                                    <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="e3dcfe72b3e930939aa6aa10e81b981d" Selector="&lt;wnd ctrlid='1001' title='Address: *' /&gt;" WaitForReady="INTERACTIVE" />
+                                                                                  </ui:TypeInto.Target>
+                                                                                </ui:TypeInto>
+                                                                                <ui:Click DelayBefore="{x:Null}" DelayMS="{x:Null}" ClickType="CLICK_SINGLE" DisplayName="Click 'Button'" sap2010:WorkflowViewState.IdRef="Click_153" KeyModifiers="None" MouseButton="BTN_LEFT" SendWindowMessages="False" SimulateClick="False">
+                                                                                  <ui:Click.CursorPosition>
+                                                                                    <ui:CursorPosition OffsetX="57" OffsetY="11" Position="TopLeft" />
+                                                                                  </ui:Click.CursorPosition>
+                                                                                  <ui:Click.Target>
+                                                                                    <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="1400303c396c97e4e14fd10b66ba1f68" Selector="&lt;wnd ctrlid='1' title='&amp;amp;Save' /&gt;" WaitForReady="INTERACTIVE" />
+                                                                                  </ui:Click.Target>
+                                                                                </ui:Click>
+                                                                              </Sequence>
+                                                                            </ActivityAction>
+                                                                          </ui:WindowScope.Body>
+                                                                        </ui:WindowScope>
+                                                                      </Sequence>
+                                                                    </ActivityAction>
+                                                                  </ui:ForEachRow.Body>
+                                                                </ui:ForEachRow>
+                                                              </Sequence>
+                                                            </Sequence>
+                                                          </Sequence>
+                                                        </ActivityAction>
+                                                      </ui:BrowserScope.Body>
+                                                    </ui:BrowserScope>
+                                                  </Sequence>
+                                                </ActivityAction>
+                                              </ui:OpenBrowser.Body>
+                                            </ui:OpenBrowser>
+                                          </Sequence>
+                                        </TryCatch.Try>
+                                        <TryCatch.Catches>
+                                          <Catch x:TypeArguments="s:Exception" sap2010:WorkflowViewState.IdRef="Catch`1_4">
+                                            <ActivityAction x:TypeArguments="s:Exception">
+                                              <ActivityAction.Argument>
+                                                <DelegateInArgument x:TypeArguments="s:Exception" Name="exception" />
+                                              </ActivityAction.Argument>
+                                            </ActivityAction>
+                                          </Catch>
+                                        </TryCatch.Catches>
+                                      </TryCatch>
+                                      <ui:CommentOut DisplayName="Comment out" sap2010:WorkflowViewState.IdRef="CommentOut_11">
+                                        <ui:CommentOut.Body>
+                                          <Sequence DisplayName="Ignored Activities" sap2010:WorkflowViewState.IdRef="Sequence_258" />
+                                        </ui:CommentOut.Body>
+                                      </ui:CommentOut>
+                                    </Sequence>
+                                  </Sequence>
+                                </ActivityAction>
+                              </ui:ExcelApplicationScope.Body>
+                            </ui:ExcelApplicationScope>
+                          </If.Then>
+                        </If>
+                      </Sequence>
+                    </ActivityAction>
+                  </ui:ForEachRow.Body>
+                </ui:ForEachRow>
+              </Sequence>
+            </Sequence>
+            <FlowStep.Next>
+              <FlowStep x:Name="__ReferenceID3" sap2010:WorkflowViewState.IdRef="FlowStep_36">
+                <Sequence DisplayName="print allNr elem" sap2010:WorkflowViewState.IdRef="Sequence_323">
+                  <Sequence DisplayName="Display all data" sap2010:WorkflowViewState.IdRef="Sequence_325">
+                    <ui:ForEach x:TypeArguments="x:String" DisplayName="For each&lt;string&gt;" sap2010:WorkflowViewState.IdRef="ForEach`1_8" Values="[allNr]">
+                      <ui:ForEach.Body>
+                        <ActivityAction x:TypeArguments="x:String">
+                          <ActivityAction.Argument>
+                            <DelegateInArgument x:TypeArguments="x:String" Name="inputNr" />
+                          </ActivityAction.Argument>
+                          <Sequence DisplayName="Body" sap2010:WorkflowViewState.IdRef="Sequence_324">
+                            <ui:MessageBox Caption="{x:Null}" ChosenButton="{x:Null}" Buttons="Ok" DisplayName="Message box" sap2010:WorkflowViewState.IdRef="MessageBox_2" Text="[&quot;Input nr: &quot; + inputNr]" TopMost="True" />
+                          </Sequence>
+                        </ActivityAction>
+                      </ui:ForEach.Body>
+                    </ui:ForEach>
+                  </Sequence>
+                </Sequence>
+                <FlowStep.Next>
+                  <FlowStep x:Name="__ReferenceID1" sap2010:WorkflowViewState.IdRef="FlowStep_19">
+                    <Sequence DisplayName="Send email attachments" sap2010:WorkflowViewState.IdRef="Sequence_83">
+                      <Sequence.Variables>
+                        <Variable x:TypeArguments="x:String" Name="email" />
+                        <Variable x:TypeArguments="sd:DataTable" Name="tempDT" />
+                      </Sequence.Variables>
+                      <ui:ExcelApplicationScope Password="{x:Null}" DisplayName="Excel application scope" sap2010:WorkflowViewState.IdRef="ExcelApplicationScope_11" WorkbookPath="Parameters.xlsx">
+                        <ui:ExcelApplicationScope.Body>
+                          <ActivityAction x:TypeArguments="ui:WorkbookApplication">
+                            <ActivityAction.Argument>
+                              <DelegateInArgument x:TypeArguments="ui:WorkbookApplication" Name="ExcelWorkbookScope" />
+                            </ActivityAction.Argument>
+                            <Sequence DisplayName="Do" sap2010:WorkflowViewState.IdRef="Sequence_84">
+                              <ui:ExcelReadCell Cell="A2" DisplayName="Read Cell" sap2010:WorkflowViewState.IdRef="ExcelReadCell_2" SheetName="Sheet1">
+                                <ui:ExcelReadCell.Result>
+                                  <OutArgument x:TypeArguments="x:String">[email]</OutArgument>
+                                </ui:ExcelReadCell.Result>
+                              </ui:ExcelReadCell>
+                            </Sequence>
+                          </ActivityAction>
+                        </ui:ExcelApplicationScope.Body>
+                      </ui:ExcelApplicationScope>
+                      <Sequence DisplayName="Send Email Attachments" sap2010:WorkflowViewState.IdRef="Sequence_315">
+                        <Sequence.Variables>
+                          <Variable x:TypeArguments="s:String[]" Name="fileNamesToBeAttache" />
+                          <Variable x:TypeArguments="snm:MailMessage" Name="mail" />
+                          <Variable x:TypeArguments="x:String" Name="password" />
+                        </Sequence.Variables>
+                        <ui:ForEach x:TypeArguments="x:Object" DisplayName="For each" sap2010:WorkflowViewState.IdRef="ForEach`1_9" Values="[allNr]">
+                          <ui:ForEach.Body>
+                            <ActivityAction x:TypeArguments="x:Object">
+                              <ActivityAction.Argument>
+                                <DelegateInArgument x:TypeArguments="x:Object" Name="inputNr" />
+                              </ActivityAction.Argument>
+                              <Sequence DisplayName="Body" sap2010:WorkflowViewState.IdRef="Sequence_326">
+                                <Assign sap2010:WorkflowViewState.IdRef="Assign_10">
+                                  <Assign.To>
+                                    <OutArgument x:TypeArguments="s:String[]">[fileNamesToBeAttache]</OutArgument>
+                                  </Assign.To>
+                                  <Assign.Value>
+                                    <InArgument x:TypeArguments="s:String[]">[System.IO.Directory.GetFiles(day + "\" + inputNr.ToString)]</InArgument>
+                                  </Assign.Value>
+                                </Assign>
+                                <Assign sap2010:WorkflowViewState.IdRef="Assign_11">
+                                  <Assign.To>
+                                    <OutArgument x:TypeArguments="snm:MailMessage">[mail]</OutArgument>
+                                  </Assign.To>
+                                  <Assign.Value>
+                                    <InArgument x:TypeArguments="snm:MailMessage">[new MailMessage()]</InArgument>
+                                  </Assign.Value>
+                                </Assign>
+                                <ui:ForEach x:TypeArguments="x:String" DisplayName="For each&lt;string&gt;" sap2010:WorkflowViewState.IdRef="ForEach`1_6" Values="[fileNamesToBeAttache]">
+                                  <ui:ForEach.Body>
+                                    <ActivityAction x:TypeArguments="x:String">
+                                      <ActivityAction.Argument>
+                                        <DelegateInArgument x:TypeArguments="x:String" Name="item" />
+                                      </ActivityAction.Argument>
+                                      <Sequence DisplayName="Body" sap2010:WorkflowViewState.IdRef="Sequence_313">
+                                        <Sequence.Variables>
+                                          <Variable x:TypeArguments="snm:Attachment" Name="attachment" />
+                                          <Variable x:TypeArguments="snm:AttachmentCollection" Name="attachments" />
+                                        </Sequence.Variables>
+                                        <WriteLine DisplayName="Write line" sap2010:WorkflowViewState.IdRef="WriteLine_10" Text="[item]" />
+                                        <Assign sap2010:WorkflowViewState.IdRef="Assign_12">
+                                          <Assign.To>
+                                            <OutArgument x:TypeArguments="snm:Attachment">[attachment]</OutArgument>
+                                          </Assign.To>
+                                          <Assign.Value>
+                                            <InArgument x:TypeArguments="snm:Attachment">[new Attachment(item,System.Net.Mime.MediaTypeNames.Application.Octet)]</InArgument>
+                                          </Assign.Value>
+                                        </Assign>
+                                        <InvokeMethod DisplayName="Invoke method" sap2010:WorkflowViewState.IdRef="InvokeMethod_3" MethodName="Add">
+                                          <InvokeMethod.TargetObject>
+                                            <InArgument x:TypeArguments="snm:AttachmentCollection">[mail.Attachments]</InArgument>
+                                          </InvokeMethod.TargetObject>
+                                          <InArgument x:TypeArguments="snm:Attachment">[attachment]</InArgument>
+                                        </InvokeMethod>
+                                      </Sequence>
+                                    </ActivityAction>
+                                  </ui:ForEach.Body>
+                                </ui:ForEach>
                               </Sequence>
                             </ActivityAction>
-                          </ui:ExcelApplicationScope.Body>
-                        </ui:ExcelApplicationScope>
-                      </If.Then>
-                    </If>
-                  </Sequence>
-                </ActivityAction>
-              </ui:ForEachRow.Body>
-            </ui:ForEachRow>
-          </Sequence>
-        </Sequence>
+                          </ui:ForEach.Body>
+                        </ui:ForEach>
+                        <Assign sap2010:WorkflowViewState.IdRef="Assign_13">
+                          <Assign.To>
+                            <OutArgument x:TypeArguments="x:String">[mail.Body]</OutArgument>
+                          </Assign.To>
+                          <Assign.Value>
+                            <InArgument x:TypeArguments="x:String">[“Laba diena, teikiame gautus derinti TA.”]</InArgument>
+                          </Assign.Value>
+                        </Assign>
+                        <Assign sap2010:WorkflowViewState.IdRef="Assign_14">
+                          <Assign.To>
+                            <OutArgument x:TypeArguments="x:String">[mail.Subject]</OutArgument>
+                          </Assign.To>
+                          <Assign.Value>
+                            <InArgument x:TypeArguments="x:String">Gautas naujas TA Reg. Nr.</InArgument>
+                          </Assign.Value>
+                        </Assign>
+                        <If Condition="[mail.Attachments.Count &gt; 0]" sap2010:WorkflowViewState.IdRef="If_9">
+                          <If.Then>
+                            <Sequence sap2010:WorkflowViewState.IdRef="Sequence_314">
+                              <ui:SendMail Bcc="{x:Null}" Cc="{x:Null}" From="{x:Null}" Name="{x:Null}" TimeoutMS="{x:Null}" Body="[“Laba diena, teikiame gautus derinti TA.”]" DisplayName="Send SMTP Mail Message" Email="alionalisovskaja95@gmail.com" EnableSSL="True" sap2010:WorkflowViewState.IdRef="SendMail_7" IsBodyHtml="False" MailMessage="[mail]" Password="yrfbrvrcrvdchwdz" Port="587" SecureConnection="Auto" Server="smtp.gmail.com" Subject="Gautas naujas TA Reg. Nr." To="[email]">
+                                <ui:SendMail.Files>
+                                  <scg:List x:TypeArguments="InArgument(x:String)" Capacity="4" />
+                                </ui:SendMail.Files>
+                              </ui:SendMail>
+                            </Sequence>
+                          </If.Then>
+                        </If>
+                        <InvokeMethod DisplayName="Invoke method" sap2010:WorkflowViewState.IdRef="InvokeMethod_4" MethodName="Dispose">
+                          <InvokeMethod.TargetObject>
+                            <InArgument x:TypeArguments="snm:MailMessage">[mail]</InArgument>
+                          </InvokeMethod.TargetObject>
+                        </InvokeMethod>
+                      </Sequence>
+                    </Sequence>
+                  </FlowStep>
+                </FlowStep.Next>
+              </FlowStep>
+            </FlowStep.Next>
+          </FlowStep>
+        </FlowStep.Next>
       </FlowStep>
     </Flowchart.StartNode>
     <x:Reference>__ReferenceID0</x:Reference>
-    <FlowStep sap2010:WorkflowViewState.IdRef="FlowStep_19">
-      <Sequence DisplayName="Send email" sap2010:WorkflowViewState.IdRef="Sequence_83">
-        <Sequence.Variables>
-          <Variable x:TypeArguments="x:String" Name="email" />
-          <Variable x:TypeArguments="sd:DataTable" Name="tempDT" />
-        </Sequence.Variables>
-        <ui:ExcelApplicationScope Password="{x:Null}" DisplayName="Excel application scope" sap2010:WorkflowViewState.IdRef="ExcelApplicationScope_11" WorkbookPath="Parameters.xlsx">
-          <ui:ExcelApplicationScope.Body>
-            <ActivityAction x:TypeArguments="ui:WorkbookApplication">
-              <ActivityAction.Argument>
-                <DelegateInArgument x:TypeArguments="ui:WorkbookApplication" Name="ExcelWorkbookScope" />
-              </ActivityAction.Argument>
-              <Sequence DisplayName="Do" sap2010:WorkflowViewState.IdRef="Sequence_84">
-                <ui:ExcelReadCell Cell="A2" DisplayName="Read Cell" sap2010:WorkflowViewState.IdRef="ExcelReadCell_2" SheetName="Sheet1">
-                  <ui:ExcelReadCell.Result>
-                    <OutArgument x:TypeArguments="x:String">[email]</OutArgument>
-                  </ui:ExcelReadCell.Result>
-                </ui:ExcelReadCell>
-              </Sequence>
-            </ActivityAction>
-          </ui:ExcelApplicationScope.Body>
-        </ui:ExcelApplicationScope>
-        <ui:SendMail Bcc="{x:Null}" Cc="{x:Null}" From="{x:Null}" MailMessage="{x:Null}" Name="{x:Null}" TimeoutMS="{x:Null}" Body="[“Laba diena, teikiame gautus derinti TA.”]" DisplayName="Send SMTP Mail Message" Email="alionalisovskaja95@gmail.com" EnableSSL="True" sap2010:WorkflowViewState.IdRef="SendMail_3" IsBodyHtml="False" Password="yrfbrvrcrvdchwdz" Port="587" SecureConnection="Auto" Server="smtp.gmail.com" Subject="Gautas naujas TA Reg. Nr." To="[email]">
-          <ui:SendMail.Files>
-            <scg:List x:TypeArguments="InArgument(x:String)" Capacity="4">
-              <InArgument x:TypeArguments="x:String">[attachments]</InArgument>
-            </scg:List>
-          </ui:SendMail.Files>
-        </ui:SendMail>
-        <ui:CommentOut DisplayName="Comment out" sap2010:WorkflowViewState.IdRef="CommentOut_6">
-          <ui:CommentOut.Body>
-            <Sequence DisplayName="Ignored Activities" sap2010:WorkflowViewState.IdRef="Sequence_87">
-              <Sequence DisplayName="Ignored Activities" sap2010:WorkflowViewState.IdRef="Sequence_86">
-                <Sequence.Variables>
-                  <Variable x:TypeArguments="ui:GenericValue" Name="files" />
-                </Sequence.Variables>
-              </Sequence>
-            </Sequence>
-          </ui:CommentOut.Body>
-        </ui:CommentOut>
-      </Sequence>
-    </FlowStep>
+    <x:Reference>__ReferenceID1</x:Reference>
     <FlowStep sap2010:WorkflowViewState.IdRef="FlowStep_22">
       <Sequence DisplayName="Sequence susije" sap2010:WorkflowViewState.IdRef="Sequence_92">
         <Sequence DisplayName="Recording Sequence susije" sap2010:WorkflowViewState.IdRef="Sequence_95">
@@ -1130,11 +1249,54 @@
         </ui:WindowScope>
       </Sequence>
     </FlowStep>
-    <sads:DebugSymbol.Symbol>dyxDOlxVc2Vyc1xCcm9uaXVzXERlc2t0b3BcVGFzazEodjQpXE1haW4ueGFtbMEBAUoBZwEEAcUBAakCAQMBfQGtAQECTAPuCA8CAQFPO09lAgEEUTRRTgIBA1I4UlUCAQJWCe0EFAIBBVcLXxwDAcwBYAvsBBYCAQZX9AFXsAIDAc0BYkBiXQIBB2UNdB8DAcEBdQ3rBB0CAQhlkgJl7AIDAcsBaxNxHgMBwgF1JnUyAwG/AXsT6AQeAgEJbBVwJgMBwwF8FYsBIAMBsAGMARXnBBoCAQpskw9slw8DAcoBbqgBbp8CAwHJAWyDAWyIAQMByAFsUWxXAwHHAWxibG4DAcUBbMcBbM4OAwHEAX0Xfc0HAwG8AX4XiQEkAwG1AYoBF4oBuAEDAbEBjAEjjAE8AgELjgEZ5QQ0AgEMfTR9QQMBvQF+jwF+owEDAbsBhAEdhgEoAwG2AYoBXooBawMBswGKAUKKAVMDAbIBjgG2AY4BxAEDAa8BlAEf4gQqAgENhQEfhQHJAgMBtwGWAVCWAXUCAQ6YASGYAaIBAwGsAZkBIZkBxAEDAagBmgEhmgHbAQMBpgGbASHhBCwCAQ+FAaoBhQG9AQMBugGFAcgBhQHVAQMBuAGYAT6YAU0DAa0BmQFAmQFNAwGqAZkBuQGZAcEBAwGpAZoBqAGaAdgBAwGnAZwBI6YDLgIBTqcDI9sELgIBEdwEI+AEMwIBEJ0BJaUDNgIBT6kDJ9AEMgIBEp0BqAKdAeUCAwGlAaMBK6IDNgIBUKoDKc8EOgIBE6QBLdwBOAMBkAHdAS2cAz8CAVKdAy2hAz0CAVGqA6wCqgPpAgIBTbADL8wEOgIBFKUBL6wBOgMBoQGtAS/bAUADAZEB3QHJAt0B9AIDAY8B4wEzmQM+AgFTsQMxywRDAgEVqgHCAaoBowIDAaQBpwFapwFeAwGjAacBTqcBUQMBogGtAa8CrQHsAgMBoAGzATXYAUADAZIB5AE16AFDAwGMAekBNYcDQAIBVYgDNZgDRQIBVLEDzQKxA/gCAgFMtwM3yARCAgEWtAE3wgFCAwGeAcMBN8oBQAMBmgHLATfPAUUDAZcB0AE31wFCAwGTAeYByAHmAeYCAwGOAeQBzwLkAaUDAwGNAe0BN/sBQgMBgwH8ATeVAkcDAYIBlgI3hgNCAgFWuAM5vANHAgFJvQM5xwREAgEXwAHKAcABgQMDAZ8ByAFiyAFzAwGdAcUBY8UBZwMBmwHNAcoBzQH6AQMBmQHLAdMCywGNAwMBmAHVAcoB1QH6AQMBlgHSAWPSAWcDAZUB0gFW0gFaAwGUAe4BOfIBUgMBiAHzATn6AUQDAYQBlwI5qAJLAgF2qQI5tAJUAgFvtQI5hQNJAgFXugPMAboD6gICAUu4A9MCuAOpAwIBSr4DO8IDVAIBR8MDO9EDRgIBRdIDO8YERgIBGO4Bfu4BgwEDAYoB8AHMAfAB6AEDAYkB+AHMAfgB6AEDAYcB9QFm9QFqAwGGAfUBWPUBXQMBhQGXAtUClwKAAwMBgQGdAj+lAkoCAXepAtUBqQLkAQIBda8CP7ECSgIBcLUCUrUCYQIBbbsCP4IDSgIBWMADzgHAA/cBAgFIzwPOAc8D4AICAUbUA3DUA40BAgEZ1gM95QNPAgE65gM98QNYAgEz8gM9xQRNAgEangJBpAJMAgF4sAJBsALWAQIBcbwCQdoCUgIBZdsCQYEDUgIBWdYD2QLWA8QDAgFE3AND4gNOAgE75gPZAeYD6QECATnsA0PuA04CATTyA1byA2YCATH4A0PCBE4CARufAkOjAlQCAXmwAmCwAm8CAXOwAssBsALTAQIBcrwCzAK8AvcCAgFswgJH1wJSAgFm2wLLAtsCiAMCAWThAkf+AlICAVrdA0XhA1YCATztA0XtA9sBAgE1+QNFmgRWAgEomwRFwQRWAgEcnwKNBZ8CkgUDAYABoQLWAaECpAICAX+fArQBnwK5AQIBfp8Cf58ChQECAX2fApABnwKfAQIBe58CjQKfAsgEAgF6wwJJxwJXAgFpyAJJ1gJUAgFn4gJJ8AJUAgFi8QJJ9QJXAgFf9gJJ/QJUAgFb3QOoBN0DrQQCAUPfA9gB3wP0AQIBQt0DtwHdA7wBAgFB3QOBAd0DhwECAUDdA5IB3QOiAQIBPt0DkALdA+MDAgE97QNk7QN0AgE37QPQAe0D2AECATb5A9AC+QP7AgIBMP8DS5cEVgIBKZsEzwKbBIwDAgEnoQRLvgRWAgEdxQLcAcUC+gICAWvDAuMCwwKcAwIBatQC3AHUAo8CAgFo7gLcAe4CkwMCAWPzAtwB8wKMAgIBYfEC5QLxAqADAgFg+wLcAfsCjAICAV74AnX4AnkCAV34Amj4AmwCAVyBBHyBBJUBAgEqgwRNhwRbAgEtiARNlgRYAgErogRNsARYAgElsQRNtQRbAgEitgRNvQRYAgEehQTgAYUE/gICAS+DBOcCgwSnAwIBLpQE4AGUBJMCAgEsrgTgAa4ElwMCASazBOABswSQAgIBJLEE6QKxBKUDAgEjuwTgAbsEkAICASG4BHm4BH0CASC4BGy4BHACAR8=</sads:DebugSymbol.Symbol>
+    <FlowStep sap2010:WorkflowViewState.IdRef="FlowStep_34">
+      <Sequence DisplayName="Sequence List" sap2010:WorkflowViewState.IdRef="Sequence_320">
+        <Assign DisplayName="Init list" sap2010:WorkflowViewState.IdRef="Assign_16">
+          <Assign.To>
+            <OutArgument x:TypeArguments="scg:List(x:String)">[allNr]</OutArgument>
+          </Assign.To>
+          <Assign.Value>
+            <InArgument x:TypeArguments="scg:List(x:String)">[new List(of string)]</InArgument>
+          </Assign.Value>
+        </Assign>
+        <AddToCollection x:TypeArguments="x:String" Collection="[allNr]" DisplayName="Add to collection" sap2010:WorkflowViewState.IdRef="AddToCollection`1_5" Item="1564-sk" />
+        <Sequence DisplayName="Display all data" sap2010:WorkflowViewState.IdRef="Sequence_319">
+          <ui:ForEach x:TypeArguments="x:String" DisplayName="For each&lt;string&gt;" sap2010:WorkflowViewState.IdRef="ForEach`1_7" Values="[allNr]">
+            <ui:ForEach.Body>
+              <ActivityAction x:TypeArguments="x:String">
+                <ActivityAction.Argument>
+                  <DelegateInArgument x:TypeArguments="x:String" Name="inputName" />
+                </ActivityAction.Argument>
+                <Sequence DisplayName="Body" sap2010:WorkflowViewState.IdRef="Sequence_318">
+                  <ui:MessageBox Caption="{x:Null}" ChosenButton="{x:Null}" Buttons="Ok" DisplayName="Message box" sap2010:WorkflowViewState.IdRef="MessageBox_1" Text="[&quot;Input name was: &quot; + inputName]" TopMost="True" />
+                </Sequence>
+              </ActivityAction>
+            </ui:ForEach.Body>
+          </ui:ForEach>
+        </Sequence>
+      </Sequence>
+    </FlowStep>
+    <x:Reference>__ReferenceID2</x:Reference>
+    <x:Reference>__ReferenceID3</x:Reference>
+    <sads:DebugSymbol.Symbol>dyxDOlxVc2Vyc1xCcm9uaXVzXERlc2t0b3BcVGFzazEodjQpXE1haW4ueGFtbIACAUoBZwEEAcUBAakCAQMBfQGtAQECTgOCCg8CAQFRO1FlAgEEUzRTTgIBA1Q4VFUCAQJZCWIUAwGbAmUN/QQYAgFOgAURjwUcAgFFkgUVhwYgAgEFWgthFAMBnAJmD24gAwGZAm8P/AQaAgFPgQUTjgUeAgFGlwUXpgUyAgE9pwUXhgYiAgEGX0BfVQMBnwJcQVxIAwGdAmb4AWa0AgMBmgJxRHFhAgFQdBGDASMDAY4ChAER+wQhAgFRggUVjQUiAgFHlwWzAZcFxAECAUSdBR2jBSgCAT6tBRnlBSYCASHmBRntBSICAR3uBRn1BSICARn2BRmABh4CAQqBBhmFBigCAQd0lgJ08AIDAZgCeheAASIDAY8ChAEqhAE2AwGMAooBF/gEIgIBUoIFlgGCBZ8BAgFMiAUbigUmAgFIngUfogUyAgE/rQWMAa0FlQECATuzBR/iBSoCASLrBUTrBW8CASDoBUXoBVACAR7zBUTzBV0CARzwBUXwBVMCARr2BSf2BUgCAQv4BR3+BSgCAQ2DBkuDBlECAQh7GX8qAwGQAosBGZoBJAMB/QGbARn3BB4CAVOJBR2JBegBAgFJngU2ngU6AgFDoAVLoAVSAgFBngWPAZ4FlwECAUC0BSG7BSoCATe8BSHDBSoCATPEBSHhBS4CASP5BR/9BS0CAQ57lw97mw8DAZcCfawBfaMCAwGWAnuHAXuMAQMBlQJ7VXtbAwGUAntme3IDAZICe8sBe9IOAwGRAowBG4wB0QcDAYkCjQEbmAEoAwGCApkBG5kBvAEDAf4BmwEnmwFAAgFUnQEd9QQ4AgFViQWyAYkF1gECAUq5BU65BYoBAgE6tgVPtgVlAgE4wQVTwQVmAgE2vgVUvgVaAgE0xAWiAcQFugECATHKBSfeBTICAST5Bd8D+QXoAwIBF/kFgwH5BbABAgEW+QXAA/kF2wMCARX5BdwB+QX6AQIBFPkFggP5BYcDAgET+QWnA/kFtwMCARL5BeoC+QX8AgIBEfkF2AL5BeACAgEPjAE4jAFFAwGKAo0BkwGNAacBAwGIApMBIZUBLAMBgwKZAWKZAW8DAYACmQFGmQFXAwH/AZ0BugGdAcgBAwH8AaMBI/IELgIBVs8FKc8FjAECAS7QBSnXBTICASrYBSndBTgCASWUASOUAc0CAwGEAqUBVKUBeQIBV6cBJacB3gEDAfgBqAElqAGmAQMB9QGpASWpAcgBAwHxAaoBJaoB3wEDAe8BqwEl8QQwAgFYzwWBAc8FiQECAS/VBVrVBaEBAgEt0gVb0gVnAgEr2gVk2gV2AgEo3AVY3AVkAgEmlAGuAZQBwQEDAYcClAHMAZQB2QEDAYUCpwFcpwFlAwH6AacByAGnAdsBAwH5AagBQqgBUQMB9gGpAUSpAVEDAfMBqQG9AakBxQEDAfIBqgGsAaoB3AEDAfABrAEntgMyAwGXAbcDJ+sEMgIBWuwEJ/AENwIBWa0BKbUDOgMBmAG5AyvgBDYCAVutAawCrQHpAgMB7gGzAS+yAzoDAZkBugMt3wQ+AgFctAEx7AE8AwHZAe0BMawDQwMBmwGtAzGxA0EDAZoBugOwAroD7QIDAZYBwAMz3AQ+AgFdtQEzvAE+AwHqAb0BM+sBRAMB2gHtAc0C7QH4AgMB2AHzATepA0IDAZwBwQM12wRHAgFeugHGAboBpwIDAe0BtwFetwFiAwHsAbcBUrcBVQMB6wG9AbMCvQHwAgMB6QHDATnoAUQDAdsB9AE5+AFHAwHVAfkBOZcDRAMBngGYAzmoA0kDAZ0BwQPRAsED/AIDAZUBxwM72ARGAgFfxAE70gFGAwHnAdMBO9oBRAMB4wHbATvfAUkDAeAB4AE75wFGAwHcAfYBzAH2AeoCAwHXAfQB0wL0AakDAwHWAf0BO4sCRgMBzAGMAjulAksDAcsBpgI7lgNGAwGfAcgDPcwDSwMBkgHNAz3XBEgCAWDQAc4B0AGFAwMB6AHYAWbYAXcDAeYB1QFn1QFrAwHkAd0BzgHdAf4BAwHiAdsB1wLbAZEDAwHhAeUBzgHlAf4BAwHfAeIBZ+IBawMB3gHiAVriAV4DAd0B/gE9ggJWAwHRAYMCPYoCSAMBzQGnAj24Ak8DAb8BuQI9xAJYAwG4AcUCPZUDTQMBoAHKA9ABygPuAgMBlAHIA9cCyAOtAwMBkwHOAz/SA1gDAZAB0wM/4QNKAwGOAeIDP9YESgIBYf4BggH+AYcBAwHTAYAC0AGAAuwBAwHSAYgC0AGIAuwBAwHQAYUCaoUCbgMBzwGFAlyFAmEDAc4BpwLZAqcChAMDAcoBrQJDtQJOAwHAAbkC2QG5AugBAwG+Ab8CQ8ECTgMBuQHFAlbFAmUDAbYBywJDkgNOAwGhAdAD0gHQA/sBAwGRAd8D0gHfA+QCAwGPAeQDdOQDkQECAWLmA0H1A1MDAYMB9gNBgQRcAgF8ggRB1QRRAgFjrgJFtAJQAwHBAcACRcAC2gEDAboBzAJF6gJWAwGuAesCRZEDVgMBogHmA90C5gPIAwMBjQHsA0fyA1IDAYQB9gPdAfYD7QEDAYIB/ANH/gNSAgF9ggRaggRqAgF6iARH0gRSAgFkrwJHswJYAwHCAcACZMACcwMBvAHAAs8BwALXAQMBuwHMAtACzAL7AgMBtQHSAkvnAlYDAa8B6wLPAusCjAMDAa0B8QJLjgNWAwGjAe0DSfEDWgMBhQH9A0n9A98BAgF+iQRJqgRaAgFxqwRJ0QRaAgFlrwKRBa8ClgUDAckBsQLaAbECqAIDAcgBrwK4Aa8CvQEDAccBrwKDAa8CiQEDAcYBrwKUAa8CowEDAcQBrwKRAq8CzAQDAcMB0wJN1wJbAwGyAdgCTeYCWAMBsAHyAk2AA1gDAasBgQNNhQNbAwGoAYYDTY0DWAMBpAHtA6wE7QOxBAMBjAHvA9wB7wP4AQMBiwHtA7sB7QPAAQMBigHtA4UB7QOLAQMBiQHtA5YB7QOmAQMBhwHtA5QC7QPnAwMBhgH9A2j9A3gDAYAB/QPUAf0D3AECAX+JBNQCiQT/AgIBeY8ET6cEWgIBcqsE0wKrBJADAgFwsQRPzgRaAgFm1QLgAdUC/gIDAbQB0wLnAtMCoAMDAbMB5ALgAeQCkwIDAbEB/gLgAf4ClwMDAawBgwPgAYMDkAIDAaoBgQPpAoEDpAMDAakBiwPgAYsDkAIDAacBiAN5iAN9AwGmAYgDbIgDcAMBpQGRBIABkQSZAQIBc5MEUZcEXwIBdpgEUaYEXAIBdLIEUcAEXAIBbsEEUcUEXwIBa8YEUc0EXAIBZ5UE5AGVBIIDAgF4kwTrApMEqwMCAXekBOQBpASXAgIBdb4E5AG+BJsDAgFvwwTkAcMElAICAW3BBO0CwQSpAwIBbMsE5AHLBJQCAgFqyAR9yASBAQIBacgEcMgEdAIBaA==</sads:DebugSymbol.Symbol>
   </Flowchart>
   <sap2010:WorkflowViewState.ViewStateManager>
     <sap2010:ViewStateManager>
-      <sap2010:ViewStateData Id="OpenBrowser_2" sap:VirtualizedContainerService.HintSize="673,51">
+      <sap2010:ViewStateData Id="Assign_17" sap:VirtualizedContainerService.HintSize="242,60">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Sequence_321" sap:VirtualizedContainerService.HintSize="200,51">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="OpenBrowser_2" sap:VirtualizedContainerService.HintSize="675,51">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">False</x:Boolean>
@@ -1150,7 +1312,7 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="BrowserScope_23" sap:VirtualizedContainerService.HintSize="651,51">
+      <sap2010:ViewStateData Id="BrowserScope_23" sap:VirtualizedContainerService.HintSize="653,51">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">False</x:Boolean>
@@ -1176,7 +1338,7 @@
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
       <sap2010:ViewStateData Id="AddDataRow_4" sap:VirtualizedContainerService.HintSize="314,22" />
-      <sap2010:ViewStateData Id="Sequence_182" sap:VirtualizedContainerService.HintSize="599,51">
+      <sap2010:ViewStateData Id="Sequence_182" sap:VirtualizedContainerService.HintSize="601,51">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">False</x:Boolean>
@@ -1184,6 +1346,7 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="AddToCollection`1_6" sap:VirtualizedContainerService.HintSize="440,22" />
       <sap2010:ViewStateData Id="ClearDataTable_2" sap:VirtualizedContainerService.HintSize="440,22" />
       <sap2010:ViewStateData Id="ExcelAppendRange_18" sap:VirtualizedContainerService.HintSize="440,51">
         <sap:WorkflowViewStateService.ViewState>
@@ -1438,7 +1601,7 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Sequence_305" sap:VirtualizedContainerService.HintSize="510,2874">
+      <sap2010:ViewStateData Id="Sequence_305" sap:VirtualizedContainerService.HintSize="314,51">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">False</x:Boolean>
@@ -1469,7 +1632,7 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Sequence_307" sap:VirtualizedContainerService.HintSize="472,842">
+      <sap2010:ViewStateData Id="Sequence_307" sap:VirtualizedContainerService.HintSize="200,51">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">False</x:Boolean>
@@ -1493,23 +1656,30 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="CommentOut_11" sap:VirtualizedContainerService.HintSize="418,177" />
-      <sap2010:ViewStateData Id="Sequence_180" sap:VirtualizedContainerService.HintSize="440,719">
+      <sap2010:ViewStateData Id="CommentOut_11" sap:VirtualizedContainerService.HintSize="418,51">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">False</x:Boolean>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Sequence_180" sap:VirtualizedContainerService.HintSize="440,593">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Sequence_181" sap:VirtualizedContainerService.HintSize="462,1058">
+      <sap2010:ViewStateData Id="Sequence_181" sap:VirtualizedContainerService.HintSize="462,994">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="ExcelApplicationScope_21" sap:VirtualizedContainerService.HintSize="474,931" />
-      <sap2010:ViewStateData Id="If_7" sap:VirtualizedContainerService.HintSize="599,1079">
+      <sap2010:ViewStateData Id="ExcelApplicationScope_21" sap:VirtualizedContainerService.HintSize="476,1103" />
+      <sap2010:ViewStateData Id="If_7" sap:VirtualizedContainerService.HintSize="601,1251">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -1517,22 +1687,14 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Sequence_184" sap:VirtualizedContainerService.HintSize="621,1403">
+      <sap2010:ViewStateData Id="Sequence_184" sap:VirtualizedContainerService.HintSize="623,1466">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="ForEachRow_12" sap:VirtualizedContainerService.HintSize="651,1551">
-        <sap:WorkflowViewStateService.ViewState>
-          <scg:Dictionary x:TypeArguments="x:String, x:Object">
-            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
-            <x:Boolean x:Key="IsPinned">False</x:Boolean>
-          </scg:Dictionary>
-        </sap:WorkflowViewStateService.ViewState>
-      </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Sequence_183" sap:VirtualizedContainerService.HintSize="673,1766">
+      <sap2010:ViewStateData Id="ForEachRow_12" sap:VirtualizedContainerService.HintSize="653,1614">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -1540,18 +1702,41 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Sequence_13" sap:VirtualizedContainerService.HintSize="695,1981">
+      <sap2010:ViewStateData Id="Sequence_183" sap:VirtualizedContainerService.HintSize="675,1829">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Sequence_13" sap:VirtualizedContainerService.HintSize="200,51">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="FlowStep_2">
+      <sap2010:ViewStateData Id="MessageBox_2" sap:VirtualizedContainerService.HintSize="314,59" />
+      <sap2010:ViewStateData Id="Sequence_324" sap:VirtualizedContainerService.HintSize="336,183">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
-            <av:Point x:Key="ShapeLocation">30,54.5</av:Point>
-            <av:Size x:Key="ShapeSize">200,51</av:Size>
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="ForEach`1_8" sap:VirtualizedContainerService.HintSize="352,317" />
+      <sap2010:ViewStateData Id="Sequence_325" sap:VirtualizedContainerService.HintSize="374,441">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Sequence_323" sap:VirtualizedContainerService.HintSize="200,51">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
@@ -1563,24 +1748,55 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="ExcelApplicationScope_11" sap:VirtualizedContainerService.HintSize="416,292" />
-      <sap2010:ViewStateData Id="SendMail_3" sap:VirtualizedContainerService.HintSize="416,145" />
-      <sap2010:ViewStateData Id="Sequence_86" sap:VirtualizedContainerService.HintSize="200,99">
+      <sap2010:ViewStateData Id="ExcelApplicationScope_11" sap:VirtualizedContainerService.HintSize="486,292" />
+      <sap2010:ViewStateData Id="Assign_10" sap:VirtualizedContainerService.HintSize="287,60" />
+      <sap2010:ViewStateData Id="Assign_11" sap:VirtualizedContainerService.HintSize="287,60" />
+      <sap2010:ViewStateData Id="WriteLine_10" sap:VirtualizedContainerService.HintSize="242,61" />
+      <sap2010:ViewStateData Id="Assign_12" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="InvokeMethod_3" sap:VirtualizedContainerService.HintSize="242,132" />
+      <sap2010:ViewStateData Id="Sequence_313" sap:VirtualizedContainerService.HintSize="264,457">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Sequence_87" sap:VirtualizedContainerService.HintSize="222,223">
+      <sap2010:ViewStateData Id="ForEach`1_6" sap:VirtualizedContainerService.HintSize="287,591">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Sequence_326" sap:VirtualizedContainerService.HintSize="309,915">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="CommentOut_6" sap:VirtualizedContainerService.HintSize="416,301" />
-      <sap2010:ViewStateData Id="Sequence_83" sap:VirtualizedContainerService.HintSize="200,51">
+      <sap2010:ViewStateData Id="ForEach`1_9" sap:VirtualizedContainerService.HintSize="464,1049" />
+      <sap2010:ViewStateData Id="Assign_13" sap:VirtualizedContainerService.HintSize="464,60" />
+      <sap2010:ViewStateData Id="Assign_14" sap:VirtualizedContainerService.HintSize="464,60" />
+      <sap2010:ViewStateData Id="SendMail_7" sap:VirtualizedContainerService.HintSize="314,145" />
+      <sap2010:ViewStateData Id="Sequence_314" sap:VirtualizedContainerService.HintSize="336,269">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="If_9" sap:VirtualizedContainerService.HintSize="464,417" />
+      <sap2010:ViewStateData Id="InvokeMethod_4" sap:VirtualizedContainerService.HintSize="464,132" />
+      <sap2010:ViewStateData Id="Sequence_315" sap:VirtualizedContainerService.HintSize="486,2002">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Sequence_83" sap:VirtualizedContainerService.HintSize="508,2458">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -1590,8 +1806,35 @@
       <sap2010:ViewStateData Id="FlowStep_19">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
-            <av:Point x:Key="ShapeLocation">30,144.5</av:Point>
+            <av:Point x:Key="ShapeLocation">200,324.5</av:Point>
             <av:Size x:Key="ShapeSize">200,51</av:Size>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="FlowStep_36">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <av:Point x:Key="ShapeLocation">200,244.5</av:Point>
+            <av:Size x:Key="ShapeSize">200,51</av:Size>
+            <av:PointCollection x:Key="ConnectorLocation">300,295.5 300,324.5</av:PointCollection>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="FlowStep_2">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <av:Point x:Key="ShapeLocation">200,174.5</av:Point>
+            <av:Size x:Key="ShapeSize">200,51</av:Size>
+            <av:PointCollection x:Key="ConnectorLocation">300,225.5 300,244.5</av:PointCollection>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="FlowStep_35">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <av:Point x:Key="ShapeLocation">200,104.5</av:Point>
+            <av:Size x:Key="ShapeSize">200,51</av:Size>
+            <av:PointCollection x:Key="ConnectorLocation">300,155.5 300,174.5</av:PointCollection>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
@@ -1663,7 +1906,7 @@
       <sap2010:ViewStateData Id="FlowStep_22">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
-            <av:Point x:Key="ShapeLocation">20,244.5</av:Point>
+            <av:Point x:Key="ShapeLocation">40,494.5</av:Point>
             <av:Size x:Key="ShapeSize">200,51</av:Size>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
@@ -1821,7 +2064,7 @@
       <sap2010:ViewStateData Id="FlowStep_25">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
-            <av:Point x:Key="ShapeLocation">20,314.5</av:Point>
+            <av:Point x:Key="ShapeLocation">40,564.5</av:Point>
             <av:Size x:Key="ShapeSize">200,51</av:Size>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
@@ -1846,7 +2089,7 @@
       <sap2010:ViewStateData Id="FlowStep_26">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
-            <av:Point x:Key="ShapeLocation">20,414.5</av:Point>
+            <av:Point x:Key="ShapeLocation">40,664.5</av:Point>
             <av:Size x:Key="ShapeSize">200,51</av:Size>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
@@ -1871,7 +2114,7 @@
       <sap2010:ViewStateData Id="FlowStep_27">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
-            <av:Point x:Key="ShapeLocation">350,304.5</av:Point>
+            <av:Point x:Key="ShapeLocation">330,514.5</av:Point>
             <av:Size x:Key="ShapeSize">200,51</av:Size>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
@@ -1895,19 +2138,59 @@
       <sap2010:ViewStateData Id="FlowStep_29">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
-            <av:Point x:Key="ShapeLocation">20,514.5</av:Point>
+            <av:Point x:Key="ShapeLocation">40,764.5</av:Point>
             <av:Size x:Key="ShapeSize">200,51</av:Size>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Flowchart_1" sap:VirtualizedContainerService.HintSize="614,862">
+      <sap2010:ViewStateData Id="Assign_16" sap:VirtualizedContainerService.HintSize="374,60">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="AddToCollection`1_5" sap:VirtualizedContainerService.HintSize="374,22" />
+      <sap2010:ViewStateData Id="MessageBox_1" sap:VirtualizedContainerService.HintSize="314,59" />
+      <sap2010:ViewStateData Id="Sequence_318" sap:VirtualizedContainerService.HintSize="336,183">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="ForEach`1_7" sap:VirtualizedContainerService.HintSize="352,317" />
+      <sap2010:ViewStateData Id="Sequence_319" sap:VirtualizedContainerService.HintSize="374,441">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Sequence_320" sap:VirtualizedContainerService.HintSize="200,51">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="FlowStep_34">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <av:Point x:Key="ShapeLocation">420,144.5</av:Point>
+            <av:Size x:Key="ShapeSize">200,51</av:Size>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Flowchart_1" sap:VirtualizedContainerService.HintSize="634,862">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">False</x:Boolean>
             <av:Point x:Key="ShapeLocation">270,2.5</av:Point>
             <av:Size x:Key="ShapeSize">60,75</av:Size>
-            <av:PointCollection x:Key="ConnectorLocation">270,40 240,40 240,80 230,80</av:PointCollection>
+            <av:PointCollection x:Key="ConnectorLocation">300,77.5 300,104.5</av:PointCollection>
             <x:Double x:Key="Height">826</x:Double>
+            <x:Double x:Key="Width">620</x:Double>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
