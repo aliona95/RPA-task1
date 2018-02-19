@@ -616,12 +616,22 @@
                                             </ActivityAction>
                                           </Catch>
                                         </TryCatch.Catches>
+                                        <TryCatch.Finally>
+                                          <Sequence sap2010:WorkflowViewState.IdRef="Sequence_330">
+                                            <ui:CommentOut DisplayName="Comment out" sap2010:WorkflowViewState.IdRef="CommentOut_11">
+                                              <ui:CommentOut.Body>
+                                                <Sequence DisplayName="Ignored Activities" sap2010:WorkflowViewState.IdRef="Sequence_258">
+                                                  <ui:CloseApplication DisplayName="Close application 'chrome.exe NUTARIMAS'" sap2010:WorkflowViewState.IdRef="CloseApplication_1">
+                                                    <ui:CloseApplication.Target>
+                                                      <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="41c25161bfc0b4515e1f1b34e9d5ae32" Selector="&lt;html app='chrome.exe' title='*' /&gt;" WaitForReady="INTERACTIVE" />
+                                                    </ui:CloseApplication.Target>
+                                                  </ui:CloseApplication>
+                                                </Sequence>
+                                              </ui:CommentOut.Body>
+                                            </ui:CommentOut>
+                                          </Sequence>
+                                        </TryCatch.Finally>
                                       </TryCatch>
-                                      <ui:CommentOut DisplayName="Comment out" sap2010:WorkflowViewState.IdRef="CommentOut_11">
-                                        <ui:CommentOut.Body>
-                                          <Sequence DisplayName="Ignored Activities" sap2010:WorkflowViewState.IdRef="Sequence_258" />
-                                        </ui:CommentOut.Body>
-                                      </ui:CommentOut>
                                     </Sequence>
                                   </Sequence>
                                 </ActivityAction>
@@ -634,6 +644,11 @@
                   </ui:ForEachRow.Body>
                 </ui:ForEachRow>
               </Sequence>
+              <ui:CloseApplication DisplayName="Close application 'iexplore.exe Teisės'" sap2010:WorkflowViewState.IdRef="CloseApplication_2">
+                <ui:CloseApplication.Target>
+                  <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="359615e64ce5dac49671e085fce2cfb4" Selector="&lt;html title='*' /&gt;" WaitForReady="INTERACTIVE" />
+                </ui:CloseApplication.Target>
+              </ui:CloseApplication>
             </Sequence>
             <FlowStep.Next>
               <FlowStep x:Name="__ReferenceID3" sap2010:WorkflowViewState.IdRef="FlowStep_36">
@@ -682,59 +697,48 @@
                           <Variable x:TypeArguments="snm:MailMessage" Name="mail" />
                           <Variable x:TypeArguments="x:String" Name="password" />
                         </Sequence.Variables>
-                        <ui:ForEach x:TypeArguments="x:Object" DisplayName="For each" sap2010:WorkflowViewState.IdRef="ForEach`1_9" Values="[allNr]">
+                        <Assign sap2010:WorkflowViewState.IdRef="Assign_20">
+                          <Assign.To>
+                            <OutArgument x:TypeArguments="s:String[]">[fileNamesToBeAttache]</OutArgument>
+                          </Assign.To>
+                          <Assign.Value>
+                            <InArgument x:TypeArguments="s:String[]">[System.IO.Directory.GetFiles(day + "\18-1723")]</InArgument>
+                          </Assign.Value>
+                        </Assign>
+                        <Assign sap2010:WorkflowViewState.IdRef="Assign_11">
+                          <Assign.To>
+                            <OutArgument x:TypeArguments="snm:MailMessage">[mail]</OutArgument>
+                          </Assign.To>
+                          <Assign.Value>
+                            <InArgument x:TypeArguments="snm:MailMessage">[new MailMessage()]</InArgument>
+                          </Assign.Value>
+                        </Assign>
+                        <ui:ForEach x:TypeArguments="x:String" DisplayName="For each&lt;string&gt;" sap2010:WorkflowViewState.IdRef="ForEach`1_10" Values="[fileNamesToBeAttache]">
                           <ui:ForEach.Body>
-                            <ActivityAction x:TypeArguments="x:Object">
+                            <ActivityAction x:TypeArguments="x:String">
                               <ActivityAction.Argument>
-                                <DelegateInArgument x:TypeArguments="x:Object" Name="inputNr" />
+                                <DelegateInArgument x:TypeArguments="x:String" Name="item" />
                               </ActivityAction.Argument>
-                              <Sequence DisplayName="Body" sap2010:WorkflowViewState.IdRef="Sequence_326">
-                                <Assign sap2010:WorkflowViewState.IdRef="Assign_10">
+                              <Sequence DisplayName="Body" sap2010:WorkflowViewState.IdRef="Sequence_327">
+                                <Sequence.Variables>
+                                  <Variable x:TypeArguments="snm:Attachment" Name="attachment" />
+                                  <Variable x:TypeArguments="snm:AttachmentCollection" Name="attachments" />
+                                </Sequence.Variables>
+                                <WriteLine DisplayName="Write line" sap2010:WorkflowViewState.IdRef="WriteLine_14" Text="[item]" />
+                                <Assign sap2010:WorkflowViewState.IdRef="Assign_19">
                                   <Assign.To>
-                                    <OutArgument x:TypeArguments="s:String[]">[fileNamesToBeAttache]</OutArgument>
+                                    <OutArgument x:TypeArguments="snm:Attachment">[attachment]</OutArgument>
                                   </Assign.To>
                                   <Assign.Value>
-                                    <InArgument x:TypeArguments="s:String[]">[System.IO.Directory.GetFiles(day + "\" + inputNr.ToString)]</InArgument>
+                                    <InArgument x:TypeArguments="snm:Attachment">[new Attachment(item,System.Net.Mime.MediaTypeNames.Application.Octet)]</InArgument>
                                   </Assign.Value>
                                 </Assign>
-                                <Assign sap2010:WorkflowViewState.IdRef="Assign_11">
-                                  <Assign.To>
-                                    <OutArgument x:TypeArguments="snm:MailMessage">[mail]</OutArgument>
-                                  </Assign.To>
-                                  <Assign.Value>
-                                    <InArgument x:TypeArguments="snm:MailMessage">[new MailMessage()]</InArgument>
-                                  </Assign.Value>
-                                </Assign>
-                                <ui:ForEach x:TypeArguments="x:String" DisplayName="For each&lt;string&gt;" sap2010:WorkflowViewState.IdRef="ForEach`1_6" Values="[fileNamesToBeAttache]">
-                                  <ui:ForEach.Body>
-                                    <ActivityAction x:TypeArguments="x:String">
-                                      <ActivityAction.Argument>
-                                        <DelegateInArgument x:TypeArguments="x:String" Name="item" />
-                                      </ActivityAction.Argument>
-                                      <Sequence DisplayName="Body" sap2010:WorkflowViewState.IdRef="Sequence_313">
-                                        <Sequence.Variables>
-                                          <Variable x:TypeArguments="snm:Attachment" Name="attachment" />
-                                          <Variable x:TypeArguments="snm:AttachmentCollection" Name="attachments" />
-                                        </Sequence.Variables>
-                                        <WriteLine DisplayName="Write line" sap2010:WorkflowViewState.IdRef="WriteLine_10" Text="[item]" />
-                                        <Assign sap2010:WorkflowViewState.IdRef="Assign_12">
-                                          <Assign.To>
-                                            <OutArgument x:TypeArguments="snm:Attachment">[attachment]</OutArgument>
-                                          </Assign.To>
-                                          <Assign.Value>
-                                            <InArgument x:TypeArguments="snm:Attachment">[new Attachment(item,System.Net.Mime.MediaTypeNames.Application.Octet)]</InArgument>
-                                          </Assign.Value>
-                                        </Assign>
-                                        <InvokeMethod DisplayName="Invoke method" sap2010:WorkflowViewState.IdRef="InvokeMethod_3" MethodName="Add">
-                                          <InvokeMethod.TargetObject>
-                                            <InArgument x:TypeArguments="snm:AttachmentCollection">[mail.Attachments]</InArgument>
-                                          </InvokeMethod.TargetObject>
-                                          <InArgument x:TypeArguments="snm:Attachment">[attachment]</InArgument>
-                                        </InvokeMethod>
-                                      </Sequence>
-                                    </ActivityAction>
-                                  </ui:ForEach.Body>
-                                </ui:ForEach>
+                                <InvokeMethod DisplayName="Invoke method" sap2010:WorkflowViewState.IdRef="InvokeMethod_6" MethodName="Add">
+                                  <InvokeMethod.TargetObject>
+                                    <InArgument x:TypeArguments="snm:AttachmentCollection">[mail.Attachments]</InArgument>
+                                  </InvokeMethod.TargetObject>
+                                  <InArgument x:TypeArguments="snm:Attachment">[attachment]</InArgument>
+                                </InvokeMethod>
                               </Sequence>
                             </ActivityAction>
                           </ui:ForEach.Body>
@@ -1278,7 +1282,7 @@
     </FlowStep>
     <x:Reference>__ReferenceID2</x:Reference>
     <x:Reference>__ReferenceID3</x:Reference>
-    <sads:DebugSymbol.Symbol>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</sads:DebugSymbol.Symbol>
+    <sads:DebugSymbol.Symbol>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AtkBuQLoAQMBvQG/AkPBAk4DAbgBxQJWxQJlAwG1AcsCQ5IDTgMBoAHQA9IB0AP7AQMBkAHfA9IB3wPkAgMBjgHkA3TkA5EBAgFh5gNB9QNTAwGCAfYDQYEEXAIBe4IEQdUEUQIBYq4CRbQCUAMBwAHAAkXAAtoBAwG5AcwCReoCVgMBrQHrAkWRA1YDAaEB5gPdAuYDyAMDAYwB7ANH8gNSAwGDAfYD3QH2A+0BAwGBAfwDR/4DUgIBfIIEWoIEagIBeYgER9IEUgIBY68CR7MCWAMBwQHAAmTAAnMDAbsBwALPAcAC1wEDAboBzALQAswC+wIDAbQB0gJL5wJWAwGuAesCzwLrAowDAwGsAfECS44DVgMBogHtA0nxA1oDAYQB/QNJ/QPfAQIBfYkESaoEWgIBcKsESdEEWgIBZK8CkQWvApYFAwHIAbEC2gGxAqgCAwHHAa8CuAGvAr0BAwHGAa8CgwGvAokBAwHFAa8ClAGvAqMBAwHDAa8CkQKvAswEAwHCAdMCTdcCWwMBsQHYAk3mAlgDAa8B8gJNgANYAwGqAYEDTYUDWwMBpwGGA02NA1gDAaMB7QOsBO0DsQQDAYsB7wPcAe8D+AEDAYoB7QO7Ae0DwAEDAYkB7QOFAe0DiwEDAYgB7QOWAe0DpgEDAYYB7QOUAu0D5wMDAYUB/QNo/QN4AgF//QPUAf0D3AECAX6JBNQCiQT/AgIBeI8ET6cEWgIBcasE0wKrBJADAgFvsQRPzgRaAgFl1QLgAdUC/gIDAbMB0wLnAtMCoAMDAbIB5ALgAeQCkwIDAbAB/gLgAf4ClwMDAasBgwPgAYMDkAIDAakBgQPpAoEDpAMDAagBiwPgAYsDkAIDAaYBiAN5iAN9AwGlAYgDbIgDcAMBpAGRBIABkQSZAQIBcpMEUZcEXwIBdZgEUaYEXAIBc7IEUcAEXAIBbcEEUcUEXwIBasYEUc0EXAIBZpUE5AGVBIIDAgF3kwTrApMEqwMCAXakBOQBpASXAgIBdL4E5AG+BJsDAgFuwwTkAcMElAICAWzBBO0CwQSpAwIBa8sE5AHLBJQCAgFpyAR9yASBAQIBaMgEcMgEdAIBZw==</sads:DebugSymbol.Symbol>
   </Flowchart>
   <sap2010:WorkflowViewState.ViewStateManager>
     <sap2010:ViewStateManager>
@@ -1648,15 +1652,15 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="TryCatch_3" sap:VirtualizedContainerService.HintSize="418,287" />
-      <sap2010:ViewStateData Id="Sequence_258" sap:VirtualizedContainerService.HintSize="200,99">
+      <sap2010:ViewStateData Id="CloseApplication_1" sap:VirtualizedContainerService.HintSize="314,106" />
+      <sap2010:ViewStateData Id="Sequence_258" sap:VirtualizedContainerService.HintSize="336,230">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="CommentOut_11" sap:VirtualizedContainerService.HintSize="418,51">
+      <sap2010:ViewStateData Id="CommentOut_11" sap:VirtualizedContainerService.HintSize="200,51">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">False</x:Boolean>
@@ -1664,22 +1668,14 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Sequence_180" sap:VirtualizedContainerService.HintSize="440,593">
+      <sap2010:ViewStateData Id="Sequence_330" sap:VirtualizedContainerService.HintSize="222,175">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Sequence_181" sap:VirtualizedContainerService.HintSize="462,994">
-        <sap:WorkflowViewStateService.ViewState>
-          <scg:Dictionary x:TypeArguments="x:String, x:Object">
-            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
-          </scg:Dictionary>
-        </sap:WorkflowViewStateService.ViewState>
-      </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="ExcelApplicationScope_21" sap:VirtualizedContainerService.HintSize="476,1103" />
-      <sap2010:ViewStateData Id="If_7" sap:VirtualizedContainerService.HintSize="601,1251">
+      <sap2010:ViewStateData Id="TryCatch_3" sap:VirtualizedContainerService.HintSize="418,287">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -1687,14 +1683,22 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Sequence_184" sap:VirtualizedContainerService.HintSize="623,1466">
+      <sap2010:ViewStateData Id="Sequence_180" sap:VirtualizedContainerService.HintSize="440,502">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="ForEachRow_12" sap:VirtualizedContainerService.HintSize="653,1614">
+      <sap2010:ViewStateData Id="Sequence_181" sap:VirtualizedContainerService.HintSize="462,903">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="ExcelApplicationScope_21" sap:VirtualizedContainerService.HintSize="476,1012" />
+      <sap2010:ViewStateData Id="If_7" sap:VirtualizedContainerService.HintSize="601,1160">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -1702,7 +1706,14 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Sequence_183" sap:VirtualizedContainerService.HintSize="675,1829">
+      <sap2010:ViewStateData Id="Sequence_184" sap:VirtualizedContainerService.HintSize="623,1375">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="ForEachRow_12" sap:VirtualizedContainerService.HintSize="653,1523">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -1710,7 +1721,16 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Sequence_13" sap:VirtualizedContainerService.HintSize="200,51">
+      <sap2010:ViewStateData Id="Sequence_183" sap:VirtualizedContainerService.HintSize="675,1738">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+            <x:Boolean x:Key="IsPinned">False</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="CloseApplication_2" sap:VirtualizedContainerService.HintSize="675,106" />
+      <sap2010:ViewStateData Id="Sequence_13" sap:VirtualizedContainerService.HintSize="697,2099">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -1749,19 +1769,19 @@
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
       <sap2010:ViewStateData Id="ExcelApplicationScope_11" sap:VirtualizedContainerService.HintSize="486,292" />
-      <sap2010:ViewStateData Id="Assign_10" sap:VirtualizedContainerService.HintSize="287,60" />
-      <sap2010:ViewStateData Id="Assign_11" sap:VirtualizedContainerService.HintSize="287,60" />
-      <sap2010:ViewStateData Id="WriteLine_10" sap:VirtualizedContainerService.HintSize="242,61" />
-      <sap2010:ViewStateData Id="Assign_12" sap:VirtualizedContainerService.HintSize="242,60" />
-      <sap2010:ViewStateData Id="InvokeMethod_3" sap:VirtualizedContainerService.HintSize="242,132" />
-      <sap2010:ViewStateData Id="Sequence_313" sap:VirtualizedContainerService.HintSize="264,457">
+      <sap2010:ViewStateData Id="Assign_20" sap:VirtualizedContainerService.HintSize="464,60" />
+      <sap2010:ViewStateData Id="Assign_11" sap:VirtualizedContainerService.HintSize="464,60" />
+      <sap2010:ViewStateData Id="WriteLine_14" sap:VirtualizedContainerService.HintSize="242,61" />
+      <sap2010:ViewStateData Id="Assign_19" sap:VirtualizedContainerService.HintSize="242,60" />
+      <sap2010:ViewStateData Id="InvokeMethod_6" sap:VirtualizedContainerService.HintSize="242,132" />
+      <sap2010:ViewStateData Id="Sequence_327" sap:VirtualizedContainerService.HintSize="264,457">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="ForEach`1_6" sap:VirtualizedContainerService.HintSize="287,591">
+      <sap2010:ViewStateData Id="ForEach`1_10" sap:VirtualizedContainerService.HintSize="464,591">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -1769,14 +1789,6 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Sequence_326" sap:VirtualizedContainerService.HintSize="309,915">
-        <sap:WorkflowViewStateService.ViewState>
-          <scg:Dictionary x:TypeArguments="x:String, x:Object">
-            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
-          </scg:Dictionary>
-        </sap:WorkflowViewStateService.ViewState>
-      </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="ForEach`1_9" sap:VirtualizedContainerService.HintSize="464,1049" />
       <sap2010:ViewStateData Id="Assign_13" sap:VirtualizedContainerService.HintSize="464,60" />
       <sap2010:ViewStateData Id="Assign_14" sap:VirtualizedContainerService.HintSize="464,60" />
       <sap2010:ViewStateData Id="SendMail_7" sap:VirtualizedContainerService.HintSize="314,145" />
@@ -1789,14 +1801,14 @@
       </sap2010:ViewStateData>
       <sap2010:ViewStateData Id="If_9" sap:VirtualizedContainerService.HintSize="464,417" />
       <sap2010:ViewStateData Id="InvokeMethod_4" sap:VirtualizedContainerService.HintSize="464,132" />
-      <sap2010:ViewStateData Id="Sequence_315" sap:VirtualizedContainerService.HintSize="486,2002">
+      <sap2010:ViewStateData Id="Sequence_315" sap:VirtualizedContainerService.HintSize="486,1744">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Sequence_83" sap:VirtualizedContainerService.HintSize="508,2458">
+      <sap2010:ViewStateData Id="Sequence_83" sap:VirtualizedContainerService.HintSize="200,51">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -2194,7 +2206,7 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Main_1" sap:VirtualizedContainerService.HintSize="654,942" />
+      <sap2010:ViewStateData Id="Main_1" sap:VirtualizedContainerService.HintSize="674,942" />
     </sap2010:ViewStateManager>
   </sap2010:WorkflowViewState.ViewStateManager>
 </Activity>
